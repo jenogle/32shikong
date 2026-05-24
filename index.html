@@ -1,42 +1,640 @@
-// 1. 原始名單與競賽順序 (作備援使用)
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>失控陀螺爭霸賽 - 32強巔峰對決 (自動存檔版)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
+:root {
+  --red:      #ff1e2d;
+  --red-glow: rgba(255,30,45,0.55);
+  --red-dim:  #7a0010;
+  --blue:     #1565ff;
+  --blue-glow:rgba(21,101,255,0.55);
+  --blue-dim: #062a80;
+  --bg:       #06060e;
+  --panel:    #0d0d1a;
+  --border:   #1e1e30;
+  --text:     #e8e8f8;
+  --muted:    #555570;
+  --gold:     #ffd700;
+  --gold-glow:rgba(255,215,0,0.3);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans TC', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* spinning bg gyro effect */
+body::before {
+  content:'';
+  position:fixed;
+  top:50%; left:50%;
+  width:140vmax; height:140vmax;
+  transform:translate(-50%,-50%);
+  background: conic-gradient(
+    from 0deg,
+    rgba(255,30,45,0.04) 0deg,
+    transparent 30deg,
+    rgba(21,101,255,0.04) 180deg,
+    transparent 210deg,
+    rgba(255,30,45,0.03) 360deg
+  );
+  animation: spinBg 20s linear infinite;
+  pointer-events:none;
+  z-index:0;
+}
+@keyframes spinBg { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, transparent 40%, var(--bg) 100%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── HEADER ── */
+.site-header {
+  position:relative;
+  z-index:10;
+  text-align:center;
+  padding:28px 16px 10px;
+}
+
+.gyro-icon {
+  font-size: 2.5rem;
+  display: inline-block;
+  animation: gyroSpin 2s linear infinite;
+  line-height:1;
+}
+@keyframes gyroSpin { to { transform: rotate(360deg); } }
+
+.site-title {
+  font-family:'Orbitron', sans-serif;
+  font-weight:900;
+  font-size: clamp(1.4rem,5vw,3rem);
+  letter-spacing:0.08em;
+  margin-top:6px;
+  background: linear-gradient(90deg, var(--red) 0%, #fff 40%, var(--blue) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.1;
+}
+
+.site-sub {
+  font-size:0.7rem;
+  letter-spacing:0.25em;
+  color: var(--muted);
+  text-transform:uppercase;
+  margin-top:6px;
+}
+
+/* ── NAV TABS ── */
+.nav {
+  position:relative;
+  z-index:10;
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  padding:14px 16px;
+  flex-wrap:wrap;
+}
+
+.nav-btn {
+  padding:7px 18px;
+  border-radius:3px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--muted);
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:0.12em;
+  cursor:pointer;
+  transition:all 0.18s;
+  text-transform:uppercase;
+}
+.nav-btn:hover { color:var(--text); border-color:var(--muted); }
+.nav-btn.active-red  { background:var(--red);  border-color:var(--red);  color:#fff; box-shadow:0 0 12px var(--red-glow); }
+.nav-btn.active-blue { background:var(--blue); border-color:var(--blue); color:#fff; box-shadow:0 0 12px var(--blue-glow); }
+
+/* ── PAGE SECTIONS ── */
+.page { display:none; position:relative; z-index:5; }
+.page.active { display:block; }
+
+/* ══════════════════════════════════════════
+    LIVE SCOREBOARD
+══════════════════════════════════════════ */
+.scoreboard {
+  max-width:860px;
+  margin:0 auto;
+  padding:16px 16px 40px;
+}
+
+.match-selector-row {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.match-selector-row label {
+  font-size:0.72rem;
+  color:var(--muted);
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+}
+
+.match-select {
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:6px 12px;
+  border-radius:4px;
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:0.8rem;
+  font-weight:700;
+  cursor:pointer;
+  min-width:260px;
+}
+
+/* big score panel */
+.live-panel {
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:0;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:
+    inset 4px 0 30px rgba(255,30,45,0.08),
+    inset -4px 0 30px rgba(21,101,255,0.08);
+  position:relative;
+}
+
+.live-panel::before {
+  content:'';
+  position:absolute;
+  top:0; left:50%;
+  transform:translateX(-50%);
+  width:1px;
+  height:100%;
+  background:linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
+}
+
+.side {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:20px 16px 24px;
+  gap:10px;
+  position:relative;
+}
+
+.side.red-side  { background: linear-gradient(135deg, rgba(255,30,45,0.12) 0%, transparent 70%); }
+.side.blue-side { background: linear-gradient(225deg, rgba(21,101,255,0.12) 0%, transparent 70%); }
+
+.side-label {
+  font-size:0.6rem;
+  font-weight:700;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+}
+.red-side  .side-label { color:var(--red); }
+.blue-side .side-label { color:var(--blue); }
+
+.team-name-live {
+  font-family:'Noto Sans TC', sans-serif;
+  font-weight:900;
+  font-size:clamp(0.9rem,3vw,1.5rem);
+  text-align:center;
+  word-break:break-all;
+  min-height:2em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.red-side  .team-name-live { color:#fff; text-shadow:0 0 20px var(--red-glow); }
+.blue-side .team-name-live { color:#fff; text-shadow:0 0 20px var(--blue-glow); }
+
+.big-score {
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:clamp(4rem,14vw,8rem);
+  line-height:1;
+  transition:all 0.15s;
+}
+
+.red-side  .big-score { color:var(--red);  text-shadow:0 0 40px var(--red-glow),  0 0 80px rgba(255,30,45,0.3); }
+.blue-side .big-score { color:var(--blue); text-shadow:0 0 40px var(--blue-glow), 0 0 80px rgba(21,101,255,0.3); }
+
+.big-score.bump {
+  animation: scoreBump 0.25s ease-out;
+}
+@keyframes scoreBump {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.btn-row {
+  display:flex;
+  gap:8px;
+  margin-top:4px;
+}
+
+.score-btn {
+  width:44px;
+  height:44px;
+  border-radius:6px;
+  border:2px solid;
+  background:transparent;
+  font-size:1.4rem;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.15s;
+  line-height:1;
+  font-family:'Orbitron',sans-serif;
+}
+
+.red-side  .score-btn { border-color:var(--red-dim);  color:var(--red); }
+.blue-side .score-btn { border-color:var(--blue-dim); color:var(--blue); }
+.red-side  .score-btn:hover { background:var(--red);  color:#fff; box-shadow:0 0 16px var(--red-glow); }
+.blue-side .score-btn:hover { background:var(--blue); color:#fff; box-shadow:0 0 16px var(--blue-glow); }
+
+.score-btn.minus { font-size:1.8rem; }
+
+.win-flash {
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:0.75rem;
+  font-weight:900;
+  letter-spacing:0.1em;
+  padding:4px 10px;
+  border-radius:3px;
+  text-transform:uppercase;
+  opacity:0;
+  transition:opacity 0.3s;
+  min-height:22px;
+}
+.win-flash.show { opacity:1; }
+.red-side  .win-flash { background:var(--red);  color:#fff; box-shadow: 0 0 10px var(--red-glow); }
+.blue-side .win-flash { background:var(--blue); color:#fff; box-shadow: 0 0 10px var(--blue-glow); }
+
+/* center vs */
+.vs-col {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:20px 12px;
+  gap:14px;
+  min-width:80px;
+}
+
+.vs-text {
+  font-family:'Orbitron',sans-serif;
+  font-size:1.6rem;
+  font-weight:900;
+  color:var(--muted);
+  letter-spacing:0.1em;
+}
+
+.match-info-badge {
+  font-size:0.58rem;
+  letter-spacing:0.15em;
+  color:var(--muted);
+  text-transform:uppercase;
+  text-align:center;
+  line-height:1.6;
+}
+
+.round-badge {
+  padding:4px 8px;
+  border:1px solid var(--border);
+  border-radius:3px;
+  font-size:0.6rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  color:var(--text);
+  background:var(--bg);
+  text-align:center;
+}
+
+/* action buttons */
+.action-row {
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+
+.action-btn {
+  padding:9px 20px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  font-family:'Noto Sans TC',sans-serif;
+  font-weight:700;
+  font-size:0.78rem;
+  cursor:pointer;
+  letter-spacing:0.08em;
+  transition:all 0.18s;
+}
+.action-btn:hover { background:var(--border); }
+.action-btn.confirm-btn {
+  background:linear-gradient(90deg, var(--red-dim), var(--blue-dim));
+  border-color:transparent;
+  color:#fff;
+}
+.action-btn.confirm-btn:hover {
+  background:linear-gradient(90deg, var(--red), var(--blue));
+  box-shadow:0 0 20px rgba(150,50,150,0.4);
+}
+.action-btn.danger-btn {
+  border-color: rgba(255, 30, 45, 0.4);
+  color: #ff5252;
+}
+.action-btn.danger-btn:hover {
+  background: var(--red-dim);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ══════════════════════════════════════════
+    BRACKET PAGES
+══════════════════════════════════════════ */
+.bracket-page { padding:10px 16px 40px; }
+
+.round-heading {
+  text-align:center;
+  font-family:'Orbitron',sans-serif;
+  font-size:0.95rem;
+  font-weight:900;
+  letter-spacing:0.2em;
+  color:var(--gold);
+  margin:25px 0 15px;
+  text-transform:uppercase;
+  position:relative;
+  text-shadow: 0 0 10px var(--gold-glow);
+}
+.round-heading::before,.round-heading::after {
+  content:'';
+  position:absolute;
+  top:50%;
+  width:25%;
+  height:1px;
+  background:linear-gradient(to right, transparent, var(--border), transparent);
+}
+.round-heading::before { left:5%; background: linear-gradient(to left, var(--border), transparent); }
+.round-heading::after  { right:5%; background: linear-gradient(to right, var(--border), transparent); }
+
+.matches-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+  gap:12px;
+  max-width:1200px;
+  margin:0 auto;
+}
+
+/* bracket match card */
+.bcard {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:7px;
+  overflow:hidden;
+  transition:all 0.2s;
+  cursor:pointer;
+}
+.bcard:hover { border-color:var(--muted); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+.bcard.is-live { border-color:var(--gold); box-shadow:0 0 0 1px var(--gold), 0 0 16px rgba(255,215,0,0.15); }
+
+.bcard-label {
+  padding:6px 10px;
+  font-size:0.6rem;
+  letter-spacing:0.15em;
+  color:var(--muted);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  text-transform:uppercase;
+  background: rgba(255,255,255,0.01);
+}
+
+.live-tag {
+  font-size:0.55rem;
+  background:var(--gold);
+  color:#000;
+  padding:1px 5px;
+  border-radius:2px;
+  font-weight:900;
+  letter-spacing:0.05em;
+}
+
+.bcard-teams {
+  display:flex;
+  flex-direction:column;
+}
+
+.bcard-team {
+  display:flex;
+  justify-content:space-between;
+  padding:10px 12px;
+  font-size:0.85rem;
+  font-weight:700;
+  align-items:center;
+}
+.bcard-team:first-child { border-bottom:1px solid rgba(30,30,48,0.5); }
+
+.bcard-team.p-red { border-left: 3px solid var(--red); }
+.bcard-team.p-blue { border-left: 3px solid var(--blue); }
+
+.bcard-team .name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.bcard-team .score {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.bcard-team.winner .name { color: #fff; }
+.bcard-team.winner .score { color: var(--gold); text-shadow: 0 0 8px var(--gold-glow); }
+</style>
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="gyro-icon">🌀</div>
+    <h1 class="site-title">失控陀螺爭霸賽</h1>
+    <p class="site-sub">32強巔峰淘汰賽控制台</p>
+  </header>
+
+  <!-- ── NAV TABS ── -->
+  <nav class="nav">
+    <button class="nav-btn active-red" onclick="switchPage('live', this)">LIVE 計分板</button>
+    <button class="nav-btn" onclick="switchPage('r32', this)">32強 賽程表</button>
+    <button class="nav-btn" onclick="switchPage('r16', this)">16強 晉級表</button>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+      LIVE SCOREBOARD PAGE
+  ══════════════════════════════════════════ -->
+  <main id="page-live" class="page active">
+    <div class="scoreboard">
+      
+      <div class="match-selector-row">
+        <label for="match-select">當前對戰</label>
+        <select id="match-select" class="match-select" onchange="loadSelectedMatch()">
+          <!-- 由 JS 動態生成 32 強與 16 強對戰選項 -->
+        </select>
+      </div>
+
+      <div class="live-panel">
+        <!-- 紅方 -->
+        <div class="side red-side">
+          <span class="side-label">RED SIDE</span>
+          <div id="live-red-name" class="team-name-live">紅方選手</div>
+          <div id="live-red-score" class="big-score">0</div>
+          <div class="btn-row">
+            <button class="score-btn minus" onclick="adjustScore('red', -1)">-</button>
+            <button class="score-btn" onclick="adjustScore('red', 1)">+</button>
+          </div>
+          <div id="live-red-flash" class="win-flash">WINNER</div>
+        </div>
+
+        <!-- 中間資訊 -->
+        <div class="vs-col">
+          <div class="vs-text">VS</div>
+          <div class="round-badge" id="live-round-title">ROUND OF 32</div>
+          <div class="match-info-badge" id="live-match-id">MATCH 1</div>
+        </div>
+
+        <!-- 藍方 -->
+        <div class="side blue-side">
+          <span class="side-label">BLUE SIDE</span>
+          <div id="live-blue-name" class="team-name-live">藍方選手</div>
+          <div id="live-blue-score" class="big-score">0</div>
+          <div class="btn-row">
+            <button class="score-btn minus" onclick="adjustScore('blue', -1)">-</button>
+            <button class="score-btn" onclick="adjustScore('blue', 1)">+</button>
+          </div>
+          <div id="live-blue-flash" class="win-flash">WINNER</div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="action-btn" onclick="resetCurrentMatch()">重設本場</button>
+        <button class="action-btn confirm-btn" onclick="saveAndAdvance()">確認勝出並晉級</button>
+        <button class="action-btn danger-btn" onclick="clearTournament()">重置整個賽事</button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+      32強 賽程表 PAGE
+  ══════════════════════════════════════════ -->
+  <section id="page-r32" class="page">
+    <div class="bracket-page">
+      <div class="round-heading">32強 淘汰賽階段 (點擊卡片可帶入計分板)</div>
+      <div class="matches-grid" id="grid-r32">
+        <!-- 由 JS 動態生成 16 場對戰卡片 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+      16強 晉級表 PAGE
+  ══════════════════════════════════════════ -->
+  <section id="page-r16" class="page">
+    <div class="bracket-page">
+      <div class="round-heading">16強 晉級名單階段</div>
+      <div class="matches-grid" id="grid-r16">
+        <!-- 由 JS 動態生成 8 場對戰卡片 -->
+      </div>
+    </div>
+  </section>
+
+<script>
+// 1. 選手原始名單 (作備援與首次載入初始化使用)
 const playersList = [
-  "小菜", "Felix", "王煒強", "Mu", "漢克", "豪以", "Bo-Yi", "豬餅", 
-  "小白兔", "陀螺屁眼", "Aaron", "深淵爆轉猴", "泡麵", "林北尬周", "伊森", "華起", 
-  "小陳", "要不要吃陀螺燒", "牛魔王", "紅豆年糕", "勁廷", "阿良", "捲爸", "雷克斯", 
-  "夫夫", "小峰", "酷狗壞小子", "阿杜", "Eric", "南無阿彌陀螺", "小卡比", "大肌霸"
+  "小菜", "Felix", 
+  "王煒強", "Mu", 
+  "漢克", "豪以", 
+  "Bo-Yi", "豬餅", 
+  "小白兔", "陀螺屁眼", 
+  "Aaron", "深淵爆轉猴", 
+  "泡麵", "林北尬周", 
+  "伊森", "華起", 
+  "小陳", "要不要吃陀螺燒", 
+  "牛魔王", "紅豆年糕", 
+  "勁廷", "阿良", 
+  "捲爸", "雷克斯", 
+  "夫夫", "小峰", 
+  "酷狗壞小子", "阿杜", 
+  "Eric", "南無阿彌陀螺", 
+  "小卡比", "大肌霸"
 ];
 
-// 2. 初始化賽事數據結構
+// 2. 賽事全局結構
 let tournamentData = {
   r32: [], 
   r16: []  
 };
 
-// ── 【核心改動 1：讀取本地存檔】 ──
+// 全局當前選中比賽狀態
+let currentStage = 'r32';
+let currentMatchId = 1;
+
+// ── 【功能 1：自本地讀取賽事存檔】 ──
 function loadTournamentData() {
   const savedData = localStorage.getItem("gyro_tournament_save");
-  
   if (savedData) {
     try {
-      // 如果有存檔，直接解開 JSON 使用
       tournamentData = JSON.parse(savedData);
-      console.log("成功載入歷史賽程存檔！");
+      console.log("成功從瀏覽器快取恢復賽程進度！");
     } catch (e) {
-      console.error("存檔解析出錯，重新初始化名單", e);
+      console.error("存檔解析出錯，重新建立全新名單", e);
       initNewTournament();
     }
   } else {
-    // 沒有存檔，初始化全新比賽
     initNewTournament();
   }
 }
 
-// 初始化全新比賽的邏輯
+// 初始化全新比賽結構
 function initNewTournament() {
   tournamentData.r32 = [];
   tournamentData.r16 = [];
 
-  // 初始化 32 強
+  // 生成 32 強對戰數據
   for(let i = 0; i < 16; i++) {
     tournamentData.r32.push({
       id: i + 1,
@@ -46,11 +644,11 @@ function initNewTournament() {
       blue: playersList[i * 2 + 1],
       redScore: 0,
       blueScore: 0,
-      winner: null
+      winner: null 
     });
   }
 
-  // 初始化 16 強
+  // 生成 16 強基礎數據
   for(let i = 0; i < 8; i++) {
     tournamentData.r16.push({
       id: i + 1,
@@ -66,26 +664,21 @@ function initNewTournament() {
   }
 }
 
-// ── 【核心改動 2：儲存資料到本地】 ──
+// ── 【功能 2：立即同步存檔到本地】 ──
 function saveTournamentData() {
-  // 將物件轉換為字串存入 localStorage
   localStorage.setItem("gyro_tournament_save", JSON.stringify(tournamentData));
 }
 
-// 全局當前選中比賽
-let currentStage = 'r32';
-let currentMatchId = 1;
-
-// 3. 頁面初始化
+// 3. 核心初始化程序
 document.addEventListener("DOMContentLoaded", () => {
-  loadTournamentData(); // 先讀取存檔
+  loadTournamentData(); 
   renderSelectOptions();
   renderR32Grid();
   renderR16Grid();
   loadMatch(currentStage, currentMatchId);
 });
 
-// 切換頁面分頁
+// 分頁切換邏輯
 function switchPage(pageId, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(`page-${pageId}`).classList.add('active');
@@ -103,35 +696,37 @@ function switchPage(pageId, btn) {
   }
 }
 
-// 生成下拉選單
+// 渲染與更新動態下拉選單
 function renderSelectOptions() {
   const select = document.getElementById("match-select");
   select.innerHTML = "";
   
+  // 32強組別
   let optGroup32 = document.createElement("optgroup");
   optGroup32.label = "【32強淘汰賽】";
   tournamentData.r32.forEach(m => {
     let opt = document.createElement("option");
     opt.value = `r32-${m.id}`;
     opt.innerText = `第 ${m.id} 場：${m.red} VS ${m.blue}`;
-    if(m.winner) opt.innerText += " (已完賽)";
+    if(m.winner) opt.innerText += " (✓ 已完賽)";
     optGroup32.appendChild(opt);
   });
   select.appendChild(optGroup32);
 
+  // 16強組別
   let optGroup16 = document.createElement("optgroup");
   optGroup16.label = "【16強晉級賽】";
   tournamentData.r16.forEach(m => {
     let opt = document.createElement("option");
     opt.value = `r16-${m.id}`;
     opt.innerText = `16強 M${m.id}：${m.red} VS ${m.blue}`;
-    if(m.winner) opt.innerText += " (已完賽)";
+    if(m.winner) opt.innerText += " (✓ 已完賽)";
     optGroup16.appendChild(opt);
   });
   select.appendChild(optGroup16);
 }
 
-// 載入選定比賽到計分板
+// 下拉選單選定載入
 function loadSelectedMatch() {
   const val = document.getElementById("match-select").value;
   const parts = val.split('-');
@@ -140,6 +735,7 @@ function loadSelectedMatch() {
   loadMatch(currentStage, currentMatchId);
 }
 
+// 載入特定的比賽至控制台
 function loadMatch(stage, id) {
   currentStage = stage;
   currentMatchId = id;
@@ -159,7 +755,7 @@ function loadMatch(stage, id) {
   updateWinFlash(match);
 }
 
-// 分數調整與 Bump 動效
+// 微調分數 + 特效觸發
 function adjustScore(side, amount) {
   const scoreEl = document.getElementById(`live-${side}-score`);
   let currentScore = parseInt(scoreEl.innerText);
@@ -168,10 +764,12 @@ function adjustScore(side, amount) {
   
   scoreEl.innerText = currentScore;
   
+  // 觸發放大 Bump 動態
   scoreEl.classList.remove('bump');
   void scoreEl.offsetWidth; 
   scoreEl.classList.add('bump');
   
+  // 即時動態判定領先狀態
   const rScore = parseInt(document.getElementById("live-red-score").innerText);
   const bScore = parseInt(document.getElementById("live-blue-score").innerText);
   
@@ -190,6 +788,7 @@ function adjustScore(side, amount) {
   }
 }
 
+// 更新優勝燈號
 function updateWinFlash(match) {
   const redFlash = document.getElementById("live-red-flash");
   const blueFlash = document.getElementById("live-blue-flash");
@@ -206,19 +805,20 @@ function updateWinFlash(match) {
   }
 }
 
-// 重設當前對戰
+// 重設當下控制的單場比賽
 function resetCurrentMatch() {
-  if(!confirm("確定要重設本場分數嗎？")) return;
+  if(!confirm("確定要重設本場分數嗎？ (這也會清除下一輪已晉級的名額)")) return;
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   match.redScore = 0;
   match.blueScore = 0;
   match.winner = null;
   
+  // 假若是32強重設，同步將16強內已帶入的贏家名稱洗回預設
   if(currentStage === 'r32') {
     syncToR16(currentMatchId, `32強 M${currentMatchId} 勝者`);
   }
   
-  saveTournamentData(); // 【變更後存檔】
+  saveTournamentData(); // 儲存變更
   
   loadMatch(currentStage, currentMatchId);
   renderR32Grid();
@@ -226,14 +826,14 @@ function resetCurrentMatch() {
   renderSelectOptions();
 }
 
-// 確認勝出，儲存並自動計算晉級
+// 確認完賽，儲存比分並自動推送晉級名單
 function saveAndAdvance() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   const rScore = parseInt(document.getElementById("live-red-score").innerText);
   const bScore = parseInt(document.getElementById("live-blue-score").innerText);
   
   if(rScore === bScore) {
-    alert("平手無法決定勝負！請分出勝負後再點擊確認。");
+    alert("平手無法判定贏家！請分出勝負後再點擊確認。");
     return;
   }
   
@@ -246,19 +846,21 @@ function saveAndAdvance() {
     syncToR16(currentMatchId, winnerName);
   }
   
-  saveTournamentData(); // 【變更後存檔】
-  alert(`本場結束！【${winnerName}】成功晉級並已自動存檔！`);
+  saveTournamentData(); // 寫入瀏覽器本地抽屜
+  alert(`本場對戰紀錄成功！【${winnerName}】成功晉級！(已自動存檔)`);
   
   updateWinFlash(match);
   renderR32Grid();
   renderR16Grid();
   renderSelectOptions();
   
+  // 自動載入下一場，方便裁判不間斷操作
   if(currentMatchId < tournamentData[currentStage].length) {
     loadMatch(currentStage, currentMatchId + 1);
   }
 }
 
+// 負責將32強輸出的勝者名字埋進16強對應坑位
 function syncToR16(r32MatchId, winnerName) {
   const r16Match = tournamentData.r16.find(m => m.sourceMatchIds.includes(r32MatchId));
   if(r16Match) {
@@ -270,11 +872,13 @@ function syncToR16(r32MatchId, winnerName) {
   }
 }
 
+// 賽程表卡片點擊快捷鍵：直接將對戰塞到 LIVE 計分板
 function selectMatchFromGrid(stage, id) {
   switchPage('live', document.querySelectorAll('.nav-btn')[0]);
   loadMatch(stage, id);
 }
 
+// 建立 32強 賽程圖表
 function renderR32Grid() {
   const grid = document.getElementById("grid-r32");
   grid.innerHTML = "";
@@ -308,6 +912,7 @@ function renderR32Grid() {
   });
 }
 
+// 建立 16強 賽程圖表
 function renderR16Grid() {
   const grid = document.getElementById("grid-r16");
   grid.innerHTML = "";
@@ -341,10 +946,23 @@ function renderR16Grid() {
   });
 }
 
-// 額外附贈：如果未來有新的一屆比賽想徹底重洗掉存檔，可在瀏覽器 Console 輸入「clearTournament()」
+// 【全新加入功能：一鍵清除賽事重來】
 function clearTournament() {
-  if(confirm("確定要完全清除歷史存檔，重開全新一屆比賽嗎？")) {
+  if (confirm("⚠️ 注意：這將會徹底清除當前電腦內的所有比分與晉級進度，並重新回復成最初的32強名單！確定要清空重開嗎？")) {
     localStorage.removeItem("gyro_tournament_save");
-    location.reload();
+    initNewTournament();
+    saveTournamentData();
+    
+    currentStage = 'r32';
+    currentMatchId = 1;
+    
+    renderSelectOptions();
+    renderR32Grid();
+    renderR16Grid();
+    loadMatch(currentStage, currentMatchId);
+    alert("賽事已完成重置，回到最初起點。");
   }
 }
+</script>
+</body>
+</html>
