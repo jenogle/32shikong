@@ -635,7 +635,7 @@ let currentMatchId = 1;
 
 // ── 【自動初始化與讀檔邏輯】 ──
 function loadTournamentData() {
-  const savedData = localStorage.getItem("gyro_tournament_max_save");
+  const savedData = localStorage.getItem("gyro_tournament_save");
   if (savedData) {
     try {
       tournamentData = JSON.parse(savedData);
@@ -694,7 +694,7 @@ function initNewTournament() {
 }
 
 function saveTournamentData() {
-  localStorage.setItem("gyro_tournament_max_save", JSON.stringify(tournamentData));
+  localStorage.setItem("gyro_tournament_save", JSON.stringify(tournamentData));
 }
 
 // 3. 頁面初始化啟動
@@ -939,7 +939,7 @@ function renderGrid(stage, elementId) {
 // 大重置
 function clearTournament() {
   if (confirm("⚠️ 注意：這將會徹底粉碎當前電腦的所有比分進度，並重新回復成最初的32強全新乾淨狀態！確定重來嗎？")) {
-    localStorage.removeItem("gyro_tournament_max_save");
+    localStorage.removeItem("gyro_tournament_save");
     initNewTournament();
     saveTournamentData();
     currentStage = 'r32'; currentMatchId = 1;
