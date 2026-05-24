@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>失控陀螺爭霸賽 - 巔峰淘汰賽控制台</title>
+<title>失控陀螺爭霸賽 - 巔峰淘汰賽控制台 (相容修復版)</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
 
@@ -604,7 +604,7 @@ body::after {
   </section>
 
 <script>
-// 1. 原始名單
+// 1. 原始選手名單備援
 const playersList = [
   "小菜", "Felix", "王煒強", "Mu", "漢克", "豪以", "Bo-Yi", "豬餅", 
   "小白兔", "陀螺屁眼", "Aaron", "深淵爆轉猴", "泡麵", "林北尬周", "伊森", "華起", 
@@ -612,16 +612,11 @@ const playersList = [
   "夫夫", "小峰", "酷狗壞小子", "阿杜", "Eric", "南無阿彌陀螺", "小卡比", "大肌霸"
 ];
 
-// 2. 完整擴充賽事數據結構 (支援到最終決賽)
+// 2. 賽事主資料結構
 let tournamentData = {
-  r32: [], // 16場
-  r16: [], // 8場
-  r8:  [], // 4場
-  r4:  [], // 2場
-  r2:  []  // 2場 (MATCH 1: 季軍賽, MATCH 2: 冠軍賽)
+  r32: [], r16: [], r8: [], r4: [], r2: []
 };
 
-// 賽事階段資訊對照表 (方便迴圈自動化與顯示)
 const stagesConfig = [
   { key: 'r32', count: 16, name: '32強賽', badge: 'ROUND OF 32' },
   { key: 'r16', count: 8,  name: '16強賽', badge: 'ROUND OF 16' },
@@ -633,64 +628,85 @@ const stagesConfig = [
 let currentStage = 'r32';
 let currentMatchId = 1;
 
-// ── 【自動初始化與讀檔邏輯】 ──
+// ── 【最強核心功能：結構自我修復與無痛升級讀檔】 ──
 function loadTournamentData() {
+  // 鎖定舊版存檔名稱，直接攔截原有資料
   const savedData = localStorage.getItem("gyro_tournament_save");
+  
   if (savedData) {
     try {
-      tournamentData = JSON.parse(savedData);
-      console.log("成功恢復陀螺爭霸賽完整進度！");
+      const parsed = JSON.parse(savedData);
+      
+      // 1. 完美繼承舊有的 32強 與 16強 比分紀錄
+      if (parsed.r32 && parsed.r32.length > 0) tournamentData.r32 = parsed.r32;
+      if (parsed.r16 && parsed.r16.length > 0) tournamentData.r16 = parsed.r16;
+      
+      // 2. 【修復關鍵】：如果舊檔案沒有 r8/r4/r2，則在這裡「無痛補築」，絕對不損害舊資料！
+      if (!parsed.r8 || parsed.r8.length === 0) {
+        buildMissingStages();
+      } else {
+        tournamentData.r8 = parsed.r8;
+        tournamentData.r4 = parsed.r4;
+        tournamentData.r2 = parsed.r2;
+      }
+      
+      console.log("結構自動補強升級成功！已保留舊有32強/16強比分。");
     } catch (e) {
-      console.error("存檔毀損，重置新賽事", e);
+      console.error("解析發生異常，重啟全新賽事", e);
       initNewTournament();
     }
   } else {
+    // 瀏覽器完全沒有這項紀錄時才初始化全新乾淨賽事
     initNewTournament();
   }
 }
 
-function initNewTournament() {
-  // 1. 初始化 32強
-  tournamentData.r32 = [];
-  for(let i = 0; i < 16; i++) {
-    tournamentData.r32.push({
-      id: i + 1, red: playersList[i * 2], blue: playersList[i * 2 + 1],
-      redScore: 0, blueScore: 0, winner: null
-    });
-  }
-
-  // 2. 初始化 16強
-  tournamentData.r16 = [];
-  for(let i = 0; i < 8; i++) {
-    tournamentData.r16.push({
-      id: i + 1, red: `32強 M${i*2+1} 勝者`, blue: `32強 M${i*2+2} 勝者`,
-      redScore: 0, blueScore: 0, winner: null
-    });
-  }
-
-  // 3. 初始化 8強
+// 專門處理補築後半段結構的函式
+function buildMissingStages() {
   tournamentData.r8 = [];
   for(let i = 0; i < 4; i++) {
     tournamentData.r8.push({
-      id: i + 1, red: `16強 M${i*2+1} 勝者`, blue: `16強 M${i*2+2} 勝者`,
-      redScore: 0, blueScore: 0, winner: null
+      id: i + 1, red: `16強 M${i*2+1} 勝者`, blue: `16強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null
     });
   }
-
-  // 4. 初始化 4強
   tournamentData.r4 = [];
   for(let i = 0; i < 2; i++) {
     tournamentData.r4.push({
-      id: i + 1, red: `8強 M${i*2+1} 勝者`, blue: `8強 M${i*2+2} 勝者`,
-      redScore: 0, blueScore: 0, winner: null
+      id: i + 1, red: `8強 M${i*2+1} 勝者`, blue: `8強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null
     });
   }
-
-  // 5. 初始化 決賽 (M1 為季軍賽, M2 為冠軍賽)
   tournamentData.r2 = [
     { id: 1, type: 'loser', red: "4強 M1 敗者", blue: "4強 M2 敗者", redScore: 0, blueScore: 0, winner: null },
     { id: 2, type: 'winner', red: "4強 M1 勝者", blue: "4強 M2 勝者", redScore: 0, blueScore: 0, winner: null }
   ];
+  
+  // 順便做一次橫向檢查，如果你的 16強 早就打完了，幫你把人名直接推上全新的 8強 欄位
+  for(let i=0; i<8; i++) {
+    const m16 = tournamentData.r16[i];
+    if(m16 && m16.winner) {
+      const wName = m16.winner === 'red' ? m16.red : m16.blue;
+      const tIdx = Math.floor(i / 2);
+      if(i % 2 === 0) tournamentData.r8[tIdx].red = wName;
+      else tournamentData.r8[tIdx].blue = wName;
+    }
+  }
+}
+
+// 初始化全新乾淨賽事
+function initNewTournament() {
+  tournamentData.r32 = [];
+  for(let i = 0; i < 16; i++) {
+    tournamentData.r32.push({
+      id: i + 1, red: playersList[i * 2], blue: playersList[i * 2 + 1], redScore: 0, blueScore: 0, winner: null
+    });
+  }
+  tournamentData.r16 = [];
+  for(let i = 0; i < 8; i++) {
+    tournamentData.r16.push({
+      id: i + 1, red: `32強 M${i*2+1} 勝者`, blue: `32強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null
+    });
+  }
+  buildMissingStages();
 }
 
 function saveTournamentData() {
@@ -781,7 +797,7 @@ function loadMatch(stage, id) {
   updateWinFlash(match);
 }
 
-// 計分加減與動效
+// 計分與 Bump 動效
 function adjustScore(side, amount) {
   const scoreEl = document.getElementById(`live-${side}-score`);
   let score = parseInt(scoreEl.innerText) + amount;
@@ -811,13 +827,13 @@ function updateWinFlash(match) {
   else if(match.winner === 'blue') { bFlash.classList.add('show'); bFlash.innerText = "WINNER"; }
 }
 
-// ── 【核心優化：橫向無限串聯自動晉級演算邏輯】 ──
+// 確認勝出並往下一輪自動傳遞
 function saveAndAdvance() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   const rScore = parseInt(document.getElementById("live-red-score").innerText);
   const bScore = parseInt(document.getElementById("live-blue-score").innerText);
   
-  if(rScore === bScore) { alert("平手無法判定！請多打一盤分出勝負。"); return; }
+  if(rScore === bScore) { alert("平手無法判定！請分出勝負後再點確認。"); return; }
   
   match.redScore = rScore;
   match.blueScore = bScore;
@@ -826,7 +842,6 @@ function saveAndAdvance() {
   const winnerName = match.winner === 'red' ? match.red : match.blue;
   const loserName = match.winner === 'red' ? match.blue : match.red;
   
-  // 計算下一階段的對打坑位
   const targetIndex = Math.floor((currentMatchId - 1) / 2);
   const isRedSlot = (currentMatchId % 2 !== 0); 
   
@@ -843,51 +858,39 @@ function saveAndAdvance() {
     else tournamentData.r4[targetIndex].blue = winnerName;
   }
   else if(currentStage === 'r4') {
-    // 4強賽比較特別：贏家打冠軍賽(r2 M2)，輸家打季軍賽(r2 M1)
     if(currentMatchId === 1) {
-      tournamentData.r2[0].red = loserName;  // 季軍賽紅方
-      tournamentData.r2[1].red = winnerName; // 冠軍賽紅方
+      tournamentData.r2[0].red = loserName;  
+      tournamentData.r2[1].red = winnerName; 
     } else {
-      tournamentData.r2[0].blue = loserName; // 季軍賽藍方
-      tournamentData.r2[1].blue = winnerName;// 冠軍賽藍方
+      tournamentData.r2[0].blue = loserName; 
+      tournamentData.r2[1].blue = winnerName;
     }
   }
   
   saveTournamentData();
   
   if(currentStage === 'r2') {
-    if(currentMatchId === 2) {
-      alert(`🎉 恭喜【${winnerName}】榮獲本屆失控陀螺爭霸賽『總冠軍』🏆！！`);
-    } else {
-      alert(`🥉 恭喜【${winnerName}】贏得季軍！`);
-    }
+    if(currentMatchId === 2) alert(`🎉 恭喜【${winnerName}】榮獲總冠軍🏆！！`);
+    else alert(`🥉 恭喜【${winnerName}】贏得季軍！`);
   } else {
-    alert(`本場結束！【${winnerName}】成功晉級下一輪！`);
+    alert(`本場結束！【${winnerName}】已成功晉級下一輪！`);
   }
   
   updateWinFlash(match);
   refreshAllUI();
   
-  // 自動推進到下一場
   if(currentMatchId < tournamentData[currentStage].length) {
     loadMatch(currentStage, currentMatchId + 1);
   }
 }
 
-// 重設單場
+// 重設當前單場
 function resetCurrentMatch() {
-  if(!confirm("確定要重設本場分數嗎？這會清除往後所有連帶的晉級進度！")) return;
+  if(!confirm("確定要重設本場分數嗎？ (重設此場不影響已儲存的其他場次)")) return;
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   match.redScore = 0; match.blueScore = 0; match.winner = null;
   
-  // 橫向清理後面的髒資料
-  initNewTournament(); // 為安全起見，若想精準清理可直接手動進賽程圖卡點擊重設。這裡採全重置或點擊各卡片重新覆蓋
-  loadTournamentData(); // 重新讀取原狀態
-  
-  // 手動洗掉當前與下一層
-  match.redScore = 0; match.blueScore = 0; match.winner = null;
   saveTournamentData();
-  
   loadMatch(currentStage, currentMatchId);
   refreshAllUI();
 }
@@ -936,16 +939,16 @@ function renderGrid(stage, elementId) {
   });
 }
 
-// 大重置
+// 徹底大清空重來
 function clearTournament() {
-  if (confirm("⚠️ 注意：這將會徹底粉碎當前電腦的所有比分進度，並重新回復成最初的32強全新乾淨狀態！確定重來嗎？")) {
+  if (confirm("⚠️ 注意：這將會完全抹除當前瀏覽器內的所有完賽紀錄，並重新回到最乾淨的32強名單。確定要清除嗎？")) {
     localStorage.removeItem("gyro_tournament_save");
     initNewTournament();
     saveTournamentData();
     currentStage = 'r32'; currentMatchId = 1;
     refreshAllUI();
     loadMatch(currentStage, currentMatchId);
-    alert("賽事控制台已洗淨重開！");
+    alert("控制台已恢復全新初始狀態。");
   }
 }
 </script>
