@@ -85,7 +85,7 @@ body {
   height: calc(100vh - 50px);
 }
 
-/* 上半部：雙翼對稱樹狀圖（橫跨全寬） */
+/* 上半部：雙翼對稱樹狀圖 */
 .bracket-container {
   flex: 1;
   display: flex;
@@ -104,7 +104,7 @@ body {
   width: 44%;
 }
 .wing.left-wing { justify-content: flex-start; }
-.wing.right-wing { justify-content: flex-end; flex-direction: row-reverse; } /* 右翼鏡面反轉 */
+.wing.right-wing { justify-content: flex-end; flex-direction: row-reverse; } 
 
 .bracket-round {
   display: flex;
@@ -143,7 +143,7 @@ body {
 .tcard-team.winner .name { color: #fff; font-weight: 900; }
 .tcard-team.winner .score { color: var(--gold); }
 
-/* ── 下半部：中控台計分板（置中微調） ── */
+/* ── 下半部：一體化中控計分台（移除 RED/BLUE 標籤，大幅放大名稱） ── */
 .control-container {
   height: 35%;
   background: var(--panel);
@@ -152,7 +152,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 10px 40px;
-  gap: 40px;
+  gap: 30px;
 }
 
 .control-left { width: 220px; display: flex; flex-direction: column; gap: 8px; }
@@ -160,29 +160,47 @@ body {
 .match-selector-row label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
 .match-select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 6px; border-radius: 4px; font-weight: 700; font-size: 0.75rem; cursor: pointer; }
 
-.control-center-board { display: grid; grid-template-columns: 180px auto 180px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-.side { display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 6px; }
+.control-center-board { display: grid; grid-template-columns: 240px auto 240px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.side { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 10px; gap: 10px; position: relative; }
 .side.red-side  { background: linear-gradient(135deg, rgba(255,30,45,0.08) 0%, transparent 80%); }
 .side.blue-side { background: linear-gradient(225deg, rgba(21,101,255,0.08) 0%, transparent 80%); }
-.team-name-live { font-weight: 900; font-size: 0.9rem; text-align: center; word-break: break-all; min-height: 2em; display: flex; align-items: center; }
-.red-side .team-name-live { color: #fff; text-shadow: 0 0 10px var(--red-glow); }
-.blue-side .team-name-live { color: #fff; text-shadow: 0 0 10px var(--blue-glow); }
-.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.2rem; line-height: 1; }
+
+/* 💥 重點優化：大幅放大計分板參賽者名稱 💥 */
+.team-name-live { 
+  font-weight: 900; 
+  font-size: 1.6rem; /* 從 0.9rem 直接暴拉到 1.6rem */
+  text-align: center; 
+  word-break: break-all; 
+  min-height: 1.5em; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  letter-spacing: 0.05em;
+}
+.red-side .team-name-live { color: #fff; text-shadow: 0 0 15px var(--red-glow); }
+.blue-side .team-name-live { color: #fff; text-shadow: 0 0 15px var(--blue-glow); }
+
+.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.5rem; line-height: 1; }
 .red-side .big-score { color: var(--red); }
 .blue-side .big-score { color: var(--blue); }
 .big-score.bump { animation: scoreBump 0.15s ease-out; }
 
-.score-btn { width: 28px; height: 28px; border-radius: 3px; border: 1px solid; background: transparent; font-size: 1rem; font-weight: 900; cursor: pointer; }
+/* 微調加減分按鈕 */
+.btn-row { display: flex; gap: 8px; }
+.score-btn { width: 32px; height: 32px; border-radius: 4px; border: 1px solid; background: transparent; font-size: 1.1rem; font-weight: 900; cursor: pointer; }
 .red-side .score-btn { border-color: var(--red-dim); color: var(--red); }
 .blue-side .score-btn { border-color: var(--blue-dim); color: var(--blue); }
 .red-side .score-btn:hover { background: var(--red); color: #fff; }
 .blue-side .score-btn:hover { background: var(--blue); color: #fff; }
-.win-flash { font-size: 0.55rem; font-weight: 900; padding: 1px 4px; border-radius: 2px; opacity: 0; }
-.win-flash.show { opacity: 1; }
 
-.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 15px; }
-.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 900; color: var(--muted); }
-.round-badge { padding: 2px 4px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.5rem; color: var(--text); background: var(--panel); white-space: nowrap; }
+.win-flash { font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 2px; opacity: 0; margin-top: 2px; }
+.win-flash.show { opacity: 1; }
+.red-side .win-flash { background: var(--red); color: #fff; }
+.blue-side .win-flash { background: var(--blue); color: #fff; }
+
+.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0 20px; }
+.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 900; color: var(--muted); }
+.round-badge { padding: 3px 6px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.55rem; color: var(--text); background: var(--panel); white-space: nowrap; font-weight: 700; }
 
 .control-right { display: flex; flex-direction: column; gap: 6px; width: 160px; }
 .action-btn { padding: 6px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; font-size: 0.72rem; cursor: pointer; text-align: center; }
@@ -253,7 +271,6 @@ body {
 
       <div class="control-center-board">
         <div class="side red-side">
-          <span class="side-label">RED</span>
           <div id="live-red-name" class="team-name-live">-</div>
           <div id="live-red-score" class="big-score">0</div>
           <div class="btn-row">
@@ -262,13 +279,14 @@ body {
           </div>
           <div id="live-red-flash" class="win-flash">WINNER</div>
         </div>
+
         <div class="vs-col">
           <div class="vs-text">VS</div>
           <div class="round-badge" id="live-round-title">STAGE</div>
           <div class="match-info-badge" id="live-match-id">M1</div>
         </div>
+
         <div class="side blue-side">
-          <span class="side-label">BLUE</span>
           <div id="live-blue-name" class="team-name-live">-</div>
           <div id="live-blue-score" class="big-score">0</div>
           <div class="btn-row">
@@ -362,16 +380,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function refreshAllUI() {
   renderSelectOptions();
-  // 渲染左翼 (M1~M8) 與 右翼 (M9~M16)
   renderWing('r32', 1, 8, 'wingL-r32'); renderWing('r32', 9, 16, 'wingR-r32');
   renderWing('r16', 1, 4, 'wingL-r16'); renderWing('r16', 5, 8, 'wingR-r16');
   renderWing('r8',  1, 2, 'wingL-r8');  renderWing('r8',  3, 4, 'wingR-r8');
   
-  // 渲染中央決賽島
   renderSingleMatchCard('r4', 1, 'center-r4-1');
   renderSingleMatchCard('r4', 2, 'center-r4-2');
-  renderSingleMatchCard('r2', 1, 'center-r2-1'); // 季軍
-  renderSingleMatchCard('r2', 2, 'center-r2-2'); // 冠軍
+  renderSingleMatchCard('r2', 1, 'center-r2-1'); 
+  renderSingleMatchCard('r2', 2, 'center-r2-2'); 
   calculatePodium();
 }
 
@@ -461,7 +477,6 @@ function resetCurrentMatch() {
 
 function selectMatchFromGrid(stage, id) { loadMatch(stage, id); }
 
-// 分流渲染左翼或右翼
 function renderWing(stage, startId, endId, containerId) {
   const container = document.getElementById(containerId); if(!container) return;
   const header = container.querySelector('.round-header-label');
@@ -484,7 +499,6 @@ function renderWing(stage, startId, endId, containerId) {
   }
 }
 
-// 渲染中央孤島獨立卡片
 function renderSingleMatchCard(stage, id, containerId) {
   const container = document.getElementById(containerId); if(!container) return;
   container.innerHTML = "";
@@ -497,8 +511,8 @@ function renderSingleMatchCard(stage, id, containerId) {
   container.innerHTML = `
     <div class="tcard ${isLive ? 'is-live' : ''}" style="width:100%" onclick="selectMatchFromGrid('${stage}', ${m.id})">
       <div class="tcard-header"><span>${lbl}</span></div>
-      <div class="tcard-team p-red ${wRed}"><span class="name">${m.red}</span><span class="score">${m.redScore}</span></div>
-      <div class="tcard-team p-blue ${wBlue}"><span class="name">${m.blue}</span><span class="score">${m.blueScore}</span></div>
+      <div class="p-red ${wRed}" style="display:flex; justify-content:space-between; align-items:center; padding:2px 5px; font-size:0.68rem; font-weight:700; height:18px; border-left:2px solid var(--red);"><span class="name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:75px; color:#a0a0c0;">${m.red}</span><span class="score" style="font-family:'Orbitron',sans-serif; font-weight:900; color:var(--muted);">${m.redScore}</span></div>
+      <div class="p-blue ${wBlue}" style="display:flex; justify-content:space-between; align-items:center; padding:2px 5px; font-size:0.68rem; font-weight:700; height:18px; border-left:2px solid var(--blue); border-top:1px solid rgba(30,30,48,0.2);"><span class="name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:75px; color:#a0a0c0;">${m.blue}</span><span class="score" style="font-family:'Orbitron',sans-serif; font-weight:900; color:var(--muted);">${m.blueScore}</span></div>
     </div>
   `;
 }
