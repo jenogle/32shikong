@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>失控陀螺爭霸賽 - 巔峰淘汰賽控制台 (相容修復版)</title>
+<title>失控陀螺爭霸賽 - 24人巔峰淘汰賽控制台</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
 
@@ -33,7 +33,6 @@ body {
   overflow-x: hidden;
 }
 
-/* spinning bg gyro effect */
 body::before {
   content:'';
   position:fixed;
@@ -63,7 +62,6 @@ body::after {
   z-index:0;
 }
 
-/* ── HEADER ── */
 .site-header {
   position:relative;
   z-index:10;
@@ -100,7 +98,6 @@ body::after {
   margin-top:6px;
 }
 
-/* ── NAV TABS ── */
 .nav {
   position:relative;
   z-index:10;
@@ -129,13 +126,9 @@ body::after {
 .nav-btn.active-red  { background:var(--red);  border-color:var(--red);  color:#fff; box-shadow:0 0 12px var(--red-glow); }
 .nav-btn.active-blue { background:var(--blue); border-color:var(--blue); color:#fff; box-shadow:0 0 12px var(--blue-glow); }
 
-/* ── PAGE SECTIONS ── */
 .page { display:none; position:relative; z-index:5; }
 .page.active { display:block; }
 
-/* ══════════════════════════════════════════
-    LIVE SCOREBOARD
-══════════════════════════════════════════ */
 .scoreboard {
   max-width:860px;
   margin:0 auto;
@@ -171,7 +164,6 @@ body::after {
   min-width:280px;
 }
 
-/* big score panel */
 .live-panel {
   display:grid;
   grid-template-columns:1fr auto 1fr;
@@ -298,7 +290,6 @@ body::after {
 .red-side  .win-flash { background:var(--red);  color:#fff; box-shadow: 0 0 10px var(--red-glow); }
 .blue-side .win-flash { background:var(--blue); color:#fff; box-shadow: 0 0 10px var(--blue-glow); }
 
-/* center vs */
 .vs-col {
   display:flex;
   flex-direction:column;
@@ -338,7 +329,6 @@ body::after {
   text-align:center;
 }
 
-/* action buttons */
 .action-row {
   display:flex;
   gap:8px;
@@ -380,9 +370,6 @@ body::after {
   border-color: transparent;
 }
 
-/* ══════════════════════════════════════════
-    BRACKET PAGES
-══════════════════════════════════════════ */
 .bracket-page { padding:10px 16px 40px; }
 
 .round-heading {
@@ -416,7 +403,6 @@ body::after {
   margin:0 auto;
 }
 
-/* bracket match card */
 .bcard {
   background:var(--panel);
   border:1px solid var(--border);
@@ -489,40 +475,33 @@ body::after {
 </head>
 <body>
 
-  <!-- ── HEADER ── -->
   <header class="site-header">
     <div class="gyro-icon">🌀</div>
     <h1 class="site-title">失控陀螺爭霸賽</h1>
-    <p class="site-sub">巔峰淘汰賽控制台</p>
+    <p class="site-sub">巔峰淘汰賽控制台 (24人新版)</p>
   </header>
 
-  <!-- ── NAV TABS ── -->
   <nav class="nav">
     <button class="nav-btn active-red" onclick="switchPage('live', this)">LIVE 計分板</button>
-    <button class="nav-btn" onclick="switchPage('r32', this)">32強賽程</button>
+    <button class="nav-btn" onclick="switchPage('r32', this)">32強(含輪空)</button>
     <button class="nav-btn" onclick="switchPage('r16', this)">16強晉級</button>
     <button class="nav-btn" onclick="switchPage('r8', this)">8強賽程</button>
     <button class="nav-btn" onclick="switchPage('r4', this)">4強與決賽</button>
   </nav>
 
-  <!-- ══════════════════════════════════════════
-      LIVE SCOREBOARD PAGE
-  ══════════════════════════════════════════ -->
   <main id="page-live" class="page active">
     <div class="scoreboard">
       
       <div class="match-selector-row">
         <label for="match-select">當前對戰</label>
         <select id="match-select" class="match-select" onchange="loadSelectedMatch()">
-          <!-- 由 JS 動態生成所有組別對戰選項 -->
-        </select>
+          </select>
       </div>
 
       <div class="live-panel">
-        <!-- 紅方 -->
         <div class="side red-side">
           <span class="side-label">RED SIDE</span>
-          <div id="live-red-name" class="team-name-live">紅方選手</div>
+          <div id="live-red-name" class="team-name-live">紅方</div>
           <div id="live-red-score" class="big-score">0</div>
           <div class="btn-row">
             <button class="score-btn minus" onclick="adjustScore('red', -1)">-</button>
@@ -531,17 +510,15 @@ body::after {
           <div id="live-red-flash" class="win-flash">WINNER</div>
         </div>
 
-        <!-- 中間資訊 -->
         <div class="vs-col">
           <div class="vs-text">VS</div>
           <div class="round-badge" id="live-round-title">ROUND OF 32</div>
           <div class="match-info-badge" id="live-match-id">MATCH 1</div>
         </div>
 
-        <!-- 藍方 -->
         <div class="side blue-side">
           <span class="side-label">BLUE SIDE</span>
-          <div id="live-blue-name" class="team-name-live">藍方選手</div>
+          <div id="live-blue-name" class="team-name-live">藍方</div>
           <div id="live-blue-score" class="big-score">0</div>
           <div class="btn-row">
             <button class="score-btn minus" onclick="adjustScore('blue', -1)">-</button>
@@ -560,29 +537,20 @@ body::after {
     </div>
   </main>
 
-  <!-- ══════════════════════════════════════════
-      32強 賽程表 PAGE
-  ══════════════════════════════════════════ -->
   <section id="page-r32" class="page">
     <div class="bracket-page">
-      <div class="round-heading">32強 淘汰賽階段 (點擊卡片帶入計分板)</div>
+      <div class="round-heading">32強 淘汰賽階段 (已為您預填 24 人名單與輪空位置)</div>
       <div class="matches-grid" id="grid-r32"></div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════
-      16強 晉級表 PAGE
-  ══════════════════════════════════════════ -->
   <section id="page-r16" class="page">
     <div class="bracket-page">
-      <div class="round-heading">16強 晉級賽階段</div>
+      <div class="round-heading">16強 晉級賽階段 (輪空者已由系統自動保送)</div>
       <div class="matches-grid" id="grid-r16"></div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════
-      8強 賽程表 PAGE
-  ══════════════════════════════════════════ -->
   <section id="page-r8" class="page">
     <div class="bracket-page">
       <div class="round-heading">8強 半準決賽階段</div>
@@ -590,9 +558,6 @@ body::after {
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════
-      4強與決賽 PAGE
-  ══════════════════════════════════════════ -->
   <section id="page-r4" class="page">
     <div class="bracket-page">
       <div class="round-heading">4強 準決賽階段</div>
@@ -604,15 +569,13 @@ body::after {
   </section>
 
 <script>
-// 1. 原始選手名單備援
-const playersList = [
-  "小菜", "Felix", "王煒強", "Mu", "漢克", "豪以", "Bo-Yi", "豬餅", 
-  "小白兔", "陀螺屁眼", "Aaron", "深淵爆轉猴", "泡麵", "林北尬周", "伊森", "華起", 
-  "小陳", "要不要吃陀螺燒", "牛魔王", "紅豆年糕", "勁廷", "阿良", "捲爸", "雷克斯", 
-  "夫夫", "小峰", "酷狗壞小子", "阿杜", "Eric", "南無阿彌陀螺", "小卡比", "大肌霸"
+// 精準 24 人參賽順序
+const playersList24 = [
+  "小蔡", "Ryan", "福德正神", "阿憲", "Kuromia", "bob", "菜進去", "邱葡萄",
+  "HUNTER", "大星", "樹林志", "Flash", "小短腿", "雷克斯", "泊浤", "Chiu",
+  "福壽螺", "陀螺殺神", "adan", "小卡比", "阿全", "我住旁邊", "卡哈", "塞伊德"
 ];
 
-// 2. 賽事主資料結構
 let tournamentData = {
   r32: [], r16: [], r8: [], r4: [], r2: []
 };
@@ -628,97 +591,91 @@ const stagesConfig = [
 let currentStage = 'r32';
 let currentMatchId = 1;
 
-// ── 【最強核心功能：結構自我修復與無痛升級讀檔】 ──
 function loadTournamentData() {
-  // 鎖定舊版存檔名稱，直接攔截原有資料
-  const savedData = localStorage.getItem("gyro_tournament_save");
-  
+  const savedData = localStorage.getItem("gyro_tournament_24_save");
   if (savedData) {
     try {
-      const parsed = JSON.parse(savedData);
-      
-      // 1. 完美繼承舊有的 32強 與 16強 比分紀錄
-      if (parsed.r32 && parsed.r32.length > 0) tournamentData.r32 = parsed.r32;
-      if (parsed.r16 && parsed.r16.length > 0) tournamentData.r16 = parsed.r16;
-      
-      // 2. 【修復關鍵】：如果舊檔案沒有 r8/r4/r2，則在這裡「無痛補築」，絕對不損害舊資料！
-      if (!parsed.r8 || parsed.r8.length === 0) {
-        buildMissingStages();
-      } else {
-        tournamentData.r8 = parsed.r8;
-        tournamentData.r4 = parsed.r4;
-        tournamentData.r2 = parsed.r2;
-      }
-      
-      console.log("結構自動補強升級成功！已保留舊有32強/16強比分。");
+      tournamentData = JSON.parse(savedData);
     } catch (e) {
-      console.error("解析發生異常，重啟全新賽事", e);
       initNewTournament();
     }
   } else {
-    // 瀏覽器完全沒有這項紀錄時才初始化全新乾淨賽事
     initNewTournament();
   }
 }
 
-// 專門處理補築後半段結構的函式
-function buildMissingStages() {
+// 初始化 24人 賽事且自動處理輪空
+function initNewTournament() {
+  tournamentData.r32 = [];
+  // 建立 32 強對戰 (16場)
+  for(let i = 0; i < 16; i++) {
+    let redP = playersList24[i * 2] || "(輪空)";
+    let blueP = playersList24[i * 2 + 1] || "(輪空)";
+    
+    tournamentData.r32.push({
+      id: i + 1, red: redP, blue: blueP, redScore: 0, blueScore: 0, winner: null
+    });
+  }
+
+  // 建立 16強、8強、4強骨架
+  tournamentData.r16 = [];
+  for(let i = 0; i < 8; i++) {
+    tournamentData.r16.push({ id: i + 1, red: `32強 M${i*2+1} 勝者`, blue: `32強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null });
+  }
   tournamentData.r8 = [];
   for(let i = 0; i < 4; i++) {
-    tournamentData.r8.push({
-      id: i + 1, red: `16強 M${i*2+1} 勝者`, blue: `16強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null
-    });
+    tournamentData.r8.push({ id: i + 1, red: `16強 M${i*2+1} 勝者`, blue: `16強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null });
   }
   tournamentData.r4 = [];
   for(let i = 0; i < 2; i++) {
-    tournamentData.r4.push({
-      id: i + 1, red: `8強 M${i*2+1} 勝者`, blue: `8強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null
-    });
+    tournamentData.r4.push({ id: i + 1, red: `8強 M${i*2+1} 勝者`, blue: `8強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null });
   }
   tournamentData.r2 = [
     { id: 1, type: 'loser', red: "4強 M1 敗者", blue: "4強 M2 敗者", redScore: 0, blueScore: 0, winner: null },
     { id: 2, type: 'winner', red: "4強 M1 勝者", blue: "4強 M2 勝者", redScore: 0, blueScore: 0, winner: null }
   ];
-  
-  // 順便做一次橫向檢查，如果你的 16強 早就打完了，幫你把人名直接推上全新的 8強 欄位
-  for(let i=0; i<8; i++) {
-    const m16 = tournamentData.r16[i];
-    if(m16 && m16.winner) {
-      const wName = m16.winner === 'red' ? m16.red : m16.blue;
-      const tIdx = Math.floor(i / 2);
-      if(i % 2 === 0) tournamentData.r8[tIdx].red = wName;
-      else tournamentData.r8[tIdx].blue = wName;
+
+  // 【核心黑科技】：自動掃描 32強。如果有人撞到輪空，自動保送進16強！
+  for(let i = 0; i < 16; i++) {
+    let m = tournamentData.r32[i];
+    let targetIndex = Math.floor(i / 2);
+    let isRedSlot = (i % 2 === 0);
+
+    if (m.blue === "(輪空)" && m.red !== "(輪空)") {
+      m.winner = 'red';
+      m.redScore = 1; // 給個象徵性分數
+      if(isRedSlot) tournamentData.r16[targetIndex].red = m.red;
+      else tournamentData.r16[targetIndex].blue = m.red;
+    } else if (m.red === "(輪空)" && m.blue !== "(輪空)") {
+      m.winner = 'blue';
+      m.blueScore = 1;
+      if(isRedSlot) tournamentData.r16[targetIndex].red = m.blue;
+      else tournamentData.r16[targetIndex].blue = m.blue;
     }
   }
-}
-
-// 初始化全新乾淨賽事
-function initNewTournament() {
-  tournamentData.r32 = [];
-  for(let i = 0; i < 16; i++) {
-    tournamentData.r32.push({
-      id: i + 1, red: playersList[i * 2], blue: playersList[i * 2 + 1], redScore: 0, blueScore: 0, winner: null
-    });
-  }
-  tournamentData.r16 = [];
-  for(let i = 0; i < 8; i++) {
-    tournamentData.r16.push({
-      id: i + 1, red: `32強 M${i*2+1} 勝者`, blue: `32強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null
-    });
-  }
-  buildMissingStages();
+  saveTournamentData();
 }
 
 function saveTournamentData() {
-  localStorage.setItem("gyro_tournament_save", JSON.stringify(tournamentData));
+  localStorage.setItem("gyro_tournament_24_save", JSON.stringify(tournamentData));
 }
 
-// 3. 頁面初始化啟動
 document.addEventListener("DOMContentLoaded", () => {
   loadTournamentData();
   refreshAllUI();
-  loadMatch(currentStage, currentMatchId);
+  // 避開已經自動晉級的場次，直接讀取第一個需要手動打的場次
+  findNextActiveMatch();
 });
+
+function findNextActiveMatch() {
+  for(let i=0; i<tournamentData.r32.length; i++) {
+    if(!tournamentData.r32[i].winner) {
+      loadMatch('r32', tournamentData.r32[i].id);
+      return;
+    }
+  }
+  loadMatch('r32', 1);
+}
 
 function refreshAllUI() {
   renderSelectOptions();
@@ -729,228 +686,29 @@ function refreshAllUI() {
   renderGrid('r2', 'grid-r2');
 }
 
-// 導覽切換
 function switchPage(pageId, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(`page-${pageId}`).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-red', 'active-blue'));
-  
-  if(['live', 'r8'].includes(pageId)) {
-    btn.classList.add('active-red');
-  } else {
-    btn.classList.add('active-blue');
-  }
+  if(['live', 'r8'].includes(pageId)) btn.classList.add('active-red');
+  else btn.classList.add('active-blue');
 }
 
-// 生成下拉選單
 function renderSelectOptions() {
   const select = document.getElementById("match-select");
   select.innerHTML = "";
-  
   stagesConfig.forEach(cfg => {
     let grp = document.createElement("optgroup");
     grp.label = `【${cfg.name}】`;
-    
     tournamentData[cfg.key].forEach(m => {
       let opt = document.createElement("option");
       opt.value = `${cfg.key}-${m.id}`;
-      
       let labelText = `M${m.id}：${m.red} VS ${m.blue}`;
-      if(cfg.key === 'r2') {
-        labelText = m.id === 2 ? `👑 冠軍賽：${m.red} VS ${m.blue}` : `🥉 季軍賽：${m.red} VS ${m.blue}`;
-      }
+      if(cfg.key === 'r2') labelText = m.id === 2 ? `👑 冠軍賽：${m.red} VS ${m.blue}` : `🥉 季軍賽：${m.red} VS ${m.blue}`;
       if(m.winner) labelText += " (已完賽)";
-      
       opt.innerText = labelText;
       grp.appendChild(opt);
     });
     select.appendChild(grp);
   });
 }
-
-function loadSelectedMatch() {
-  const val = document.getElementById("match-select").value;
-  const parts = val.split('-');
-  loadMatch(parts[0], parseInt(parts[1]));
-}
-
-function loadMatch(stage, id) {
-  currentStage = stage;
-  currentMatchId = id;
-  
-  const match = tournamentData[stage].find(m => m.id === id);
-  const cfg = stagesConfig.find(c => c.key === stage);
-  
-  let matchName = `MATCH ${id}`;
-  if(stage === 'r2') {
-    matchName = id === 2 ? "CHAMPIONSHIP (冠軍賽)" : "3RD PLACE (季軍賽)";
-  }
-  
-  document.getElementById("live-round-title").innerText = cfg.badge;
-  document.getElementById("live-match-id").innerText = matchName;
-  document.getElementById("live-red-name").innerText = match.red;
-  document.getElementById("live-blue-name").innerText = match.blue;
-  document.getElementById("live-red-score").innerText = match.redScore;
-  document.getElementById("live-blue-score").innerText = match.blueScore;
-  
-  document.getElementById("match-select").value = `${stage}-${id}`;
-  updateWinFlash(match);
-}
-
-// 計分與 Bump 動效
-function adjustScore(side, amount) {
-  const scoreEl = document.getElementById(`live-${side}-score`);
-  let score = parseInt(scoreEl.innerText) + amount;
-  if(score < 0) score = 0;
-  scoreEl.innerText = score;
-  
-  scoreEl.classList.remove('bump');
-  void scoreEl.offsetWidth;
-  scoreEl.classList.add('bump');
-  
-  const rScore = parseInt(document.getElementById("live-red-score").innerText);
-  const bScore = parseInt(document.getElementById("live-blue-score").innerText);
-  const rFlash = document.getElementById("live-red-flash");
-  const bFlash = document.getElementById("live-blue-flash");
-  
-  rFlash.classList.remove('show'); bFlash.classList.remove('show');
-  if(rScore > bScore) { rFlash.classList.add('show'); rFlash.innerText = "領先中"; }
-  else if(bScore > rScore) { bFlash.classList.add('show'); bFlash.innerText = "領先中"; }
-}
-
-function updateWinFlash(match) {
-  const rFlash = document.getElementById("live-red-flash");
-  const bFlash = document.getElementById("live-blue-flash");
-  rFlash.classList.remove('show'); bFlash.classList.remove('show');
-  
-  if(match.winner === 'red') { rFlash.classList.add('show'); rFlash.innerText = "WINNER"; }
-  else if(match.winner === 'blue') { bFlash.classList.add('show'); bFlash.innerText = "WINNER"; }
-}
-
-// 確認勝出並往下一輪自動傳遞
-function saveAndAdvance() {
-  const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
-  const rScore = parseInt(document.getElementById("live-red-score").innerText);
-  const bScore = parseInt(document.getElementById("live-blue-score").innerText);
-  
-  if(rScore === bScore) { alert("平手無法判定！請分出勝負後再點確認。"); return; }
-  
-  match.redScore = rScore;
-  match.blueScore = bScore;
-  match.winner = rScore > bScore ? 'red' : 'blue';
-  
-  const winnerName = match.winner === 'red' ? match.red : match.blue;
-  const loserName = match.winner === 'red' ? match.blue : match.red;
-  
-  const targetIndex = Math.floor((currentMatchId - 1) / 2);
-  const isRedSlot = (currentMatchId % 2 !== 0); 
-  
-  if(currentStage === 'r32') {
-    if(isRedSlot) tournamentData.r16[targetIndex].red = winnerName;
-    else tournamentData.r16[targetIndex].blue = winnerName;
-  } 
-  else if(currentStage === 'r16') {
-    if(isRedSlot) tournamentData.r8[targetIndex].red = winnerName;
-    else tournamentData.r8[targetIndex].blue = winnerName;
-  }
-  else if(currentStage === 'r8') {
-    if(isRedSlot) tournamentData.r4[targetIndex].red = winnerName;
-    else tournamentData.r4[targetIndex].blue = winnerName;
-  }
-  else if(currentStage === 'r4') {
-    if(currentMatchId === 1) {
-      tournamentData.r2[0].red = loserName;  
-      tournamentData.r2[1].red = winnerName; 
-    } else {
-      tournamentData.r2[0].blue = loserName; 
-      tournamentData.r2[1].blue = winnerName;
-    }
-  }
-  
-  saveTournamentData();
-  
-  if(currentStage === 'r2') {
-    if(currentMatchId === 2) alert(`🎉 恭喜【${winnerName}】榮獲總冠軍🏆！！`);
-    else alert(`🥉 恭喜【${winnerName}】贏得季軍！`);
-  } else {
-    alert(`本場結束！【${winnerName}】已成功晉級下一輪！`);
-  }
-  
-  updateWinFlash(match);
-  refreshAllUI();
-  
-  if(currentMatchId < tournamentData[currentStage].length) {
-    loadMatch(currentStage, currentMatchId + 1);
-  }
-}
-
-// 重設當前單場
-function resetCurrentMatch() {
-  if(!confirm("確定要重設本場分數嗎？ (重設此場不影響已儲存的其他場次)")) return;
-  const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
-  match.redScore = 0; match.blueScore = 0; match.winner = null;
-  
-  saveTournamentData();
-  loadMatch(currentStage, currentMatchId);
-  refreshAllUI();
-}
-
-function selectMatchFromGrid(stage, id) {
-  switchPage('live', document.querySelectorAll('.nav-btn')[0]);
-  loadMatch(stage, id);
-}
-
-// 萬用動態渲染賽程卡片功能
-function renderGrid(stage, elementId) {
-  const grid = document.getElementById(elementId);
-  grid.innerHTML = "";
-  
-  tournamentData[stage].forEach(m => {
-    const isLive = (currentStage === stage && currentMatchId === m.id);
-    const card = document.createElement("div");
-    card.className = `bcard ${isLive ? 'is-live' : ''}`;
-    card.onclick = () => selectMatchFromGrid(stage, m.id);
-    
-    let labelText = `MATCH ${m.id}`;
-    if(stage === 'r2') {
-      labelText = m.id === 2 ? "👑 GRAND FINAL 冠軍賽" : "🥉 3RD PLACE 季軍賽";
-    }
-    
-    const wRed = m.winner === 'red' ? 'winner' : '';
-    const wBlue = m.winner === 'blue' ? 'winner' : '';
-    
-    card.innerHTML = `
-      <div class="bcard-label">
-        <span>${labelText}</span>
-        ${isLive ? '<span class="live-tag">LIVE 控制中</span>' : (m.winner ? '<span>已完賽</span>' : '<span>戰意待發</span>')}
-      </div>
-      <div class="bcard-teams">
-        <div class="bcard-team p-red ${wRed}">
-          <span class="name">${m.red}</span>
-          <span class="score">${m.redScore}</span>
-        </div>
-        <div class="bcard-team p-blue ${wBlue}">
-          <span class="name">${m.blue}</span>
-          <span class="score">${m.blueScore}</span>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-// 徹底大清空重來
-function clearTournament() {
-  if (confirm("⚠️ 注意：這將會完全抹除當前瀏覽器內的所有完賽紀錄，並重新回到最乾淨的32強名單。確定要清除嗎？")) {
-    localStorage.removeItem("gyro_tournament_save");
-    initNewTournament();
-    saveTournamentData();
-    currentStage = 'r32'; currentMatchId = 1;
-    refreshAllUI();
-    loadMatch(currentStage, currentMatchId);
-    alert("控制台已恢復全新初始狀態。");
-  }
-}
-</script>
-</body>
-</html>
