@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>失控陀螺爭霸賽 - 巔峰淘汰賽控制台 (全新賽序版)</title>
+<title>失控陀螺爭霸賽 - 巔峰淘汰賽控制台</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
 
@@ -21,6 +21,8 @@
   --muted:    #555570;
   --gold:     #ffd700;
   --gold-glow:rgba(255,215,0,0.3);
+  --silver:   #b0b0d0;
+  --bronze:   #cd7f32;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -125,6 +127,7 @@ body::after {
 .nav-btn:hover { color:var(--text); border-color:var(--muted); }
 .nav-btn.active-red  { background:var(--red);  border-color:var(--red);  color:#fff; box-shadow:0 0 12px var(--red-glow); }
 .nav-btn.active-blue { background:var(--blue); border-color:var(--blue); color:#fff; box-shadow:0 0 12px var(--blue-glow); }
+.nav-btn.active-gold { background:var(--gold); border-color:var(--gold); color:#000; box-shadow:0 0 12px var(--gold-glow); font-weight:900; }
 
 .page { display:none; position:relative; z-index:5; }
 .page.active { display:block; }
@@ -471,6 +474,77 @@ body::after {
 
 .bcard-team.winner .name { color: #fff; }
 .bcard-team.winner .score { color: var(--gold); text-shadow: 0 0 8px var(--gold-glow); }
+
+/* ══════════════════════════════════════════
+    🏆 PHOTO PODIUM (榮譽牆拍照專用區)
+══════════════════════════════════════════ */
+.podium-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 30px 20px;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 30px rgba(255,215,0,0.05);
+  position: relative;
+}
+.podium-title {
+  font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--gold);
+  text-shadow: 0 0 15px var(--gold-glow);
+  letter-spacing: 0.1em;
+  margin-bottom: 35px;
+}
+.podium-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 600px) {
+  .podium-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .podium-box.rank-1 {
+    grid-column: span 2;
+  }
+}
+.podium-box {
+  background: rgba(6,6,14,0.6);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+.podium-box:hover { transform: translateY(-3px); }
+
+.podium-box.rank-1 { border-color: var(--gold); background: linear-gradient(180deg, rgba(255,215,0,0.05) 0%, transparent 100%); box-shadow: 0 0 25px rgba(255,215,0,0.1); }
+.podium-box.rank-2 { border-color: var(--silver); }
+.podium-box.rank-3 { border-color: var(--bronze); }
+.podium-box.rank-4 { border-color: var(--muted); }
+
+.medal-icon { font-size: 2.8rem; line-height: 1; margin-bottom: 8px; animation: gyroSpin 4s linear infinite; }
+.rank-label { font-size: 0.75rem; font-weight: 900; letter-spacing: 0.2em; margin-bottom: 6px; text-transform: uppercase; }
+
+.rank-1 .rank-label { color: var(--gold); }
+.rank-2 .rank-label { color: var(--silver); }
+.rank-3 .rank-label { color: var(--bronze); }
+.rank-4 .rank-label { color: var(--muted); }
+
+.winner-name {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
+  word-break: break-all;
+}
+.rank-1 .winner-name { font-size: clamp(1.6rem, 4vw, 2.6rem); color: #fff; text-shadow: 0 0 20px var(--gold-glow); }
 </style>
 </head>
 <body>
@@ -487,6 +561,7 @@ body::after {
     <button class="nav-btn" onclick="switchPage('r16', this)">16強晉級</button>
     <button class="nav-btn" onclick="switchPage('r8', this)">8強賽程</button>
     <button class="nav-btn" onclick="switchPage('r4', this)">4強與決賽</button>
+    <button class="nav-btn" style="border-color: var(--gold); color: var(--gold);" onclick="switchPage('podium', this)">🏆 榮譽拍照牆</button>
   </nav>
 
   <main id="page-live" class="page active">
@@ -564,25 +639,48 @@ body::after {
     </div>
   </section>
 
+  <section id="page-podium" class="page">
+    <div class="bracket-page">
+      <div class="podium-container">
+        <h2 class="podium-title">🏆 榮譽殿堂 🏆</h2>
+        <div class="podium-grid">
+          
+          <div class="podium-box rank-1">
+            <div class="medal-icon">👑</div>
+            <div class="rank-label">CHAMPION 總冠軍</div>
+            <div id="podium-1" class="winner-name">等候決賽結果...</div>
+          </div>
+
+          <div class="podium-box rank-2">
+            <div class="medal-icon">🥈</div>
+            <div class="rank-label">2ND PLACE 亞軍</div>
+            <div id="podium-2" class="winner-name">等候決賽結果...</div>
+          </div>
+
+          <div class="podium-box rank-3">
+            <div class="medal-icon">🥉</div>
+            <div class="rank-label">3RD PLACE 季軍</div>
+            <div id="podium-3" class="winner-name">等候決賽結果...</div>
+          </div>
+
+          <div class="podium-box rank-4">
+            <div class="medal-icon">⚙️</div>
+            <div class="rank-label">4TH PLACE 殿軍</div>
+            <div id="podium-4" class="winner-name">等候決賽結果...</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
 <script>
-// 1. 全新25人名單，不足32人處自動填補「(輪空)」
+// 25位新選手賽序名單
 const playersList = [
-  "小蔡", "Ryan", 
-  "福德正神", "阿憲", 
-  "Kuromia", "bob", 
-  "菜進去", "邱葡萄", 
-  "HUNTER", "大星", 
-  "樹林志", "Flash", 
-  "小短腿", "雷克斯", 
-  "泊浤", "Chiu", 
-  "福壽螺", "陀螺殺神", 
-  "adan", "小卡比", 
-  "阿全", "我住旁邊", 
-  "卡哈", "塞伊德", 
-  "甲是丁", "(輪空)",
-  "(輪空)", "(輪空)",
-  "(輪空)", "(輪空)",
-  "(輪空)", "(輪空)"
+  "小蔡", "Ryan", "福德正神", "阿憲", "Kuromia", "bob", "菜進去", "邱葡萄", 
+  "HUNTER", "大星", "樹林志", "Flash", "小短腿", "雷克斯", "泊浤", "Chiu", 
+  "福壽螺", "陀螺殺神", "adan", "小卡比", "阿全", "我住旁邊", "卡哈", "塞伊德", 
+  "甲是丁", "(輪空)", "(輪空)", "(輪空)", "(輪空)", "(輪空)", "(輪空)", "(輪空)"
 ];
 
 let tournamentData = {
@@ -605,23 +703,16 @@ function loadTournamentData() {
   if (savedData) {
     try {
       const parsed = JSON.parse(savedData);
-      // 檢查是否包含新的名單關鍵字（例如"Ryan"），若沒有代表是上一屆舊資料，強制重新洗牌新賽季
       const isNewSquad = parsed.r32 && parsed.r32[0] && (parsed.r32[0].red === "小蔡" && parsed.r32[0].blue === "Ryan");
-      
       if (isNewSquad) {
-        tournamentData.r32 = parsed.r32;
-        tournamentData.r16 = parsed.r16;
-        tournamentData.r8 = parsed.r8;
-        tournamentData.r4 = parsed.r4;
-        tournamentData.r2 = parsed.r2;
-        console.log("成功載入本屆全新名單賽程進度！");
+        tournamentData = parsed;
+        console.log("成功恢復進度！");
         return;
       }
     } catch (e) {
-      console.error("載入出錯，重新初始化", e);
+      console.error("載入出錯", e);
     }
   }
-  // 初次開啟或非本屆名單時，執行全新初始化
   initNewTournament();
   saveTournamentData();
 }
@@ -644,15 +735,11 @@ function buildMissingStages() {
 function initNewTournament() {
   tournamentData.r32 = [];
   for(let i = 0; i < 16; i++) {
-    tournamentData.r32.push({
-      id: i + 1, red: playersList[i * 2], blue: playersList[i * 2 + 1], redScore: 0, blueScore: 0, winner: null
-    });
+    tournamentData.r32.push({ id: i + 1, red: playersList[i * 2], blue: playersList[i * 2 + 1], redScore: 0, blueScore: 0, winner: null });
   }
   tournamentData.r16 = [];
   for(let i = 0; i < 8; i++) {
-    tournamentData.r16.push({
-      id: i + 1, red: `32強 M${i*2+1} 勝者`, blue: `32強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null
-    });
+    tournamentData.r16.push({ id: i + 1, red: `32強 M${i*2+1} 勝者`, blue: `32強 M${i*2+2} 勝者`, redScore: 0, blueScore: 0, winner: null });
   }
   buildMissingStages();
 }
@@ -674,14 +761,17 @@ function refreshAllUI() {
   renderGrid('r8', 'grid-r8');
   renderGrid('r4', 'grid-r4');
   renderGrid('r2', 'grid-r2');
+  calculatePodium(); // 刷新拍照牆上的獲獎資料
 }
 
 function switchPage(pageId, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(`page-${pageId}`).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-red', 'active-blue'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-red', 'active-blue', 'active-gold'));
   
-  if(['live', 'r8'].includes(pageId)) {
+  if (pageId === 'podium') {
+    btn.classList.add('active-gold');
+  } else if(['live', 'r8'].includes(pageId)) {
     btn.classList.add('active-red');
   } else {
     btn.classList.add('active-blue');
@@ -691,18 +781,14 @@ function switchPage(pageId, btn) {
 function renderSelectOptions() {
   const select = document.getElementById("match-select");
   select.innerHTML = "";
-  
   stagesConfig.forEach(cfg => {
     let grp = document.createElement("optgroup");
     grp.label = `【${cfg.name}】`;
-    
     tournamentData[cfg.key].forEach(m => {
       let opt = document.createElement("option");
       opt.value = `${cfg.key}-${m.id}`;
       let labelText = `M${m.id}：${m.red} VS ${m.blue}`;
-      if(cfg.key === 'r2') {
-        labelText = m.id === 2 ? `👑 冠軍賽：${m.red} VS ${m.blue}` : `🥉 季軍賽：${m.red} VS ${m.blue}`;
-      }
+      if(cfg.key === 'r2') labelText = m.id === 2 ? `👑 冠軍賽：${m.red} VS ${m.blue}` : `🥉 季軍賽：${m.red} VS ${m.blue}`;
       if(m.winner) labelText += " (已完賽)";
       opt.innerText = labelText;
       grp.appendChild(opt);
@@ -720,14 +806,11 @@ function loadSelectedMatch() {
 function loadMatch(stage, id) {
   currentStage = stage;
   currentMatchId = id;
-  
   const match = tournamentData[stage].find(m => m.id === id);
   const cfg = stagesConfig.find(c => c.key === stage);
   
   let matchName = `MATCH ${id}`;
-  if(stage === 'r2') {
-    matchName = id === 2 ? "CHAMPIONSHIP (冠軍賽)" : "3RD PLACE (季軍賽)";
-  }
+  if(stage === 'r2') matchName = id === 2 ? "CHAMPIONSHIP (冠軍賽)" : "3RD PLACE (季軍賽)";
   
   document.getElementById("live-round-title").innerText = cfg.badge;
   document.getElementById("live-match-id").innerText = matchName;
@@ -735,11 +818,11 @@ function loadMatch(stage, id) {
   document.getElementById("live-blue-name").innerText = match.blue;
   document.getElementById("live-red-score").innerText = match.redScore;
   document.getElementById("live-blue-score").innerText = match.blueScore;
-  
   document.getElementById("match-select").value = `${stage}-${id}`;
   updateWinFlash(match);
 }
 
+// ── 【功能優化：計分即時連動賽程表】 ──
 function adjustScore(side, amount) {
   const scoreEl = document.getElementById(`live-${side}-score`);
   let score = parseInt(scoreEl.innerText) + amount;
@@ -750,11 +833,20 @@ function adjustScore(side, amount) {
   void scoreEl.offsetWidth;
   scoreEl.classList.add('bump');
   
+  // 核心改動：即時同步進 tournamentData 物件中
+  const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
+  if (side === 'red') match.redScore = score;
+  else match.blueScore = score;
+  
+  // 局部快速渲染卡片面板分數，不用重整網頁
+  const gridId = currentStage === 'r2' ? 'grid-r2' : `grid-${currentStage}`;
+  renderGrid(currentStage, gridId);
+
+  // 判定領先文字燈號
   const rScore = parseInt(document.getElementById("live-red-score").innerText);
   const bScore = parseInt(document.getElementById("live-blue-score").innerText);
   const rFlash = document.getElementById("live-red-flash");
   const bFlash = document.getElementById("live-blue-flash");
-  
   rFlash.classList.remove('show'); bFlash.classList.remove('show');
   if(rScore > bScore) { rFlash.classList.add('show'); rFlash.innerText = "領先中"; }
   else if(bScore > rScore) { bFlash.classList.add('show'); bFlash.innerText = "領先中"; }
@@ -764,7 +856,6 @@ function updateWinFlash(match) {
   const rFlash = document.getElementById("live-red-flash");
   const bFlash = document.getElementById("live-blue-flash");
   rFlash.classList.remove('show'); bFlash.classList.remove('show');
-  
   if(match.winner === 'red') { rFlash.classList.add('show'); rFlash.innerText = "WINNER"; }
   else if(match.winner === 'blue') { bFlash.classList.add('show'); bFlash.innerText = "WINNER"; }
 }
@@ -773,7 +864,6 @@ function saveAndAdvance() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   const rScore = parseInt(document.getElementById("live-red-score").innerText);
   const bScore = parseInt(document.getElementById("live-blue-score").innerText);
-  
   if(rScore === bScore) { alert("平手無法判定！請分出勝負後再點確認。"); return; }
   
   match.redScore = rScore;
@@ -811,7 +901,7 @@ function saveAndAdvance() {
   saveTournamentData();
   
   if(currentStage === 'r2') {
-    if(currentMatchId === 2) alert(`🎉 恭喜【${winnerName}】榮獲總冠軍🏆！！`);
+    if(currentMatchId === 2) alert(`🎉 恭喜【${winnerName}】榮獲總冠軍🏆！！可以前往榮譽牆分頁進行拍照囉！`);
     else alert(`🥉 恭喜【${winnerName}】贏得季軍！`);
   } else {
     alert(`本場結束！【${winnerName}】已成功晉級下一輪！`);
@@ -829,7 +919,6 @@ function resetCurrentMatch() {
   if(!confirm("確定要重設本場分數嗎？")) return;
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   match.redScore = 0; match.blueScore = 0; match.winner = null;
-  
   saveTournamentData();
   loadMatch(currentStage, currentMatchId);
   refreshAllUI();
@@ -842,6 +931,7 @@ function selectMatchFromGrid(stage, id) {
 
 function renderGrid(stage, elementId) {
   const grid = document.getElementById(elementId);
+  if (!grid) return;
   grid.innerHTML = "";
   
   tournamentData[stage].forEach(m => {
@@ -851,9 +941,7 @@ function renderGrid(stage, elementId) {
     card.onclick = () => selectMatchFromGrid(stage, m.id);
     
     let labelText = `MATCH ${m.id}`;
-    if(stage === 'r2') {
-      labelText = m.id === 2 ? "👑 GRAND FINAL 冠軍賽" : "🥉 3RD PLACE 季軍賽";
-    }
+    if(stage === 'r2') labelText = m.id === 2 ? "👑 GRAND FINAL 冠軍賽" : "🥉 3RD PLACE 季軍賽";
     
     const wRed = m.winner === 'red' ? 'winner' : '';
     const wBlue = m.winner === 'blue' ? 'winner' : '';
@@ -876,6 +964,40 @@ function renderGrid(stage, elementId) {
     `;
     grid.appendChild(card);
   });
+}
+
+// ── 【功能新增：拍照榮譽牆自動即時分析】 ──
+function calculatePodium() {
+  const m3rd = tournamentData.r2[0]; // 季軍賽
+  const mChamp = tournamentData.r2[1]; // 冠軍賽
+  
+  // 初始化拍照牆字樣
+  document.getElementById("podium-1").innerText = "等候決賽結果...";
+  document.getElementById("podium-2").innerText = "等候決賽結果...";
+  document.getElementById("podium-3").innerText = "等候決賽結果...";
+  document.getElementById("podium-4").innerText = "等候決賽結果...";
+
+  // 1. 拆解季軍賽（決定季軍與殿軍）
+  if (m3rd && m3rd.winner) {
+    if (m3rd.winner === 'red') {
+      document.getElementById("podium-3").innerText = m3rd.red;  // 季軍
+      document.getElementById("podium-4").innerText = m3rd.blue; // 殿軍
+    } else {
+      document.getElementById("podium-3").innerText = m3rd.blue; // 季軍
+      document.getElementById("podium-4").innerText = m3rd.red;  // 殿軍
+    }
+  }
+  
+  // 2. 拆解冠軍賽（決定冠軍與亞軍）
+  if (mChamp && mChamp.winner) {
+    if (mChamp.winner === 'red') {
+      document.getElementById("podium-1").innerText = mChamp.red;  // 冠軍
+      document.getElementById("podium-2").innerText = mChamp.blue; // 亞軍
+    } else {
+      document.getElementById("podium-1").innerText = mChamp.blue; // 冠軍
+      document.getElementById("podium-2").innerText = mChamp.red;  // 亞軍
+    }
+  }
 }
 
 function clearTournament() {
