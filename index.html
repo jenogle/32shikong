@@ -561,7 +561,6 @@ body::after {
     <button class="nav-btn" style="border-color: var(--gold); color: var(--gold);" onclick="switchPage('podium', this)">🏆 榮譽拍照牆</button>
   </nav>
 
-  <!-- LIVE SCOREBOARD PAGE -->
   <main id="page-live" class="page active">
     <div class="scoreboard">
       <div class="match-selector-row">
@@ -607,7 +606,6 @@ body::after {
     </div>
   </main>
 
-  <!-- 賽程總表 -->
   <section id="page-r32" class="page">
     <div class="bracket-page">
       <div class="round-heading">32強 淘汰賽階段 (點擊卡片帶入計分板)</div>
@@ -638,7 +636,6 @@ body::after {
     </div>
   </section>
 
-  <!-- 🏆 榮譽拍照牆 -->
   <section id="page-podium" class="page">
     <div class="bracket-page">
       <div class="podium-container">
@@ -670,11 +667,12 @@ body::after {
   </section>
 
 <script>
+// ── 【核心更換：27位最新選手指定賽序名單】 ──
 const playersList = [
   "小蔡", "Ryan", "福德正神", "阿憲", "Kuromia", "bob", "菜進去", "邱葡萄", 
-  "HUNTER", "大星", "樹林志", "Flash", "小短腿", "雷克斯", "泊浤", "Chiu", 
-  "福壽螺", "陀螺殺神", "adan", "小卡比", "阿全", "我住旁邊", "卡哈", "塞伊德", 
-  "甲是丁", "(輪空)", "(輪空)", "(輪空)", "(輪空)", "(輪空)", "(輪空)", "(輪空)"
+  "HUNTER", "大星", "我愛吃小黃瓜", "樹林志", "Flash", "小短腿", "雷克斯", "泊浤", 
+  "今天要吃甚麼", "Chiu", "福壽螺", "陀螺殺神", "adan", "小卡比", "阿輇", "我住旁邊", 
+  "卡哈", "塞伊德", "甲是丁", "(輪空)", "(輪空)", "(輪空)", "(輪空)", "(輪空)"
 ];
 
 let tournamentData = {
@@ -692,16 +690,13 @@ const stagesConfig = [
 let currentStage = 'r32';
 let currentMatchId = 1;
 
-// ── 【功能優化：跨分頁零延遲實時同步監聽防線】 ──
+// 跨分頁零延遲同步監聽
 window.addEventListener('storage', (e) => {
   if (e.key === "gyro_tournament_save") {
-    // 當別的分頁修改了資料，這個分頁會被觸發此事件
     const parsed = JSON.parse(e.newValue);
     if (parsed) {
       tournamentData = parsed;
-      // 1. 完全刷新目前畫面的所有表單與圖卡
       refreshAllUI();
-      // 2. 讓目前的計分板數字與被修改過的分數完全同步
       syncScoreboardFromData();
     }
   }
@@ -712,7 +707,8 @@ function loadTournamentData() {
   if (savedData) {
     try {
       const parsed = JSON.parse(savedData);
-      const isNewSquad = parsed.r32 && parsed.r32[0] && (parsed.r32[0].red === "小蔡" && parsed.r32[0].blue === "Ryan");
+      // 安全機制：確認當前緩存的第一場是不是這次新換的「小蔡 VS Ryan」，若不是則強制洗掉重劃初始線
+      const isNewSquad = parsed.r32 && parsed.r32[0] && (parsed.r32[0].red === "小蔡" && parsed.r32[0].blue === "Ryan" && parsed.r32[5].red === "我愛吃小黃瓜");
       if (isNewSquad) {
         tournamentData = parsed;
         console.log("成功恢復進度！");
@@ -821,7 +817,6 @@ function loadMatch(stage, id) {
   syncScoreboardFromData();
 }
 
-// 抽取成獨立函式，方便跨分頁載入時更新計分板狀態
 function syncScoreboardFromData() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   if(!match) return;
@@ -856,7 +851,6 @@ function adjustScore(side, amount) {
   if (side === 'red') match.redScore = score;
   else match.blueScore = score;
   
-  // 核心微調：調整完立即寫入本地，觸發另一個分頁連動更新！
   saveTournamentData();
 
   const gridId = currentStage === 'r2' ? 'grid-r2' : `grid-${currentStage}`;
