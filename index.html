@@ -93,7 +93,8 @@ body {
   align-items: center;
   padding: 10px 15px;
   background: #030308;
-  height: 65%;
+  height: 62%; /* 微調高度給下半部留呼吸空間 */
+  margin-bottom: 15px; /* 💥 核心優化：增加賽程表與下方控制台之間的戰術舒適間距 */
 }
 
 .wing {
@@ -123,7 +124,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   border-left: 1px dashed rgba(30,30,48,0.5);
   border-right: 1px dashed rgba(30,30,48,0.5);
   padding: 0 5px;
@@ -142,9 +143,9 @@ body {
 .tcard-team.winner .name { color: #fff; font-weight: 900; }
 .tcard-team.winner .score { color: var(--gold); }
 
-/* ── 下半部：中控計分台（選單已拔除，左右兩側極致拉寬放寬姓名） ── */
+/* ── 下半部：中控計分台（留白設計） ── */
 .control-container {
-  height: 35%;
+  height: 33%;
   background: var(--panel);
   border-top: 1px solid var(--border);
   display: flex;
@@ -152,12 +153,12 @@ body {
   justify-content: center;
   padding: 10px 20px;
   gap: 20px;
+  box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
 }
 
-/* 中央主控板：直接放大寬度，吞噬原本選單的空間 */
 .control-center-board { 
   display: grid; 
-  grid-template-columns: 320px auto 320px; /* 從 240px 暴增到 320px，長名字絕不被切斷 */
+  grid-template-columns: 320px auto 320px; 
   background: var(--bg); 
   border: 1px solid var(--border); 
   border-radius: 6px; 
@@ -169,7 +170,7 @@ body {
 
 .team-name-live { 
   font-weight: 900; 
-  font-size: 1.8rem; /* 字體再加大！ */
+  font-size: 1.8rem; 
   text-align: center; 
   word-break: break-all; 
   min-height: 1.4em; 
@@ -236,7 +237,7 @@ body {
     <div class="header-left">
       <div class="gyro-icon">🌀</div>
       <h1 class="site-title">失控陀螺爭霸賽</h1>
-      <span class="site-sub">直覺點擊控制台</span>
+      <span class="site-sub">直覺雙向即時連動控台</span>
     </div>
     <button class="photo-wall-btn" onclick="toggleModal(true)">🏆 榮譽拍照牆</button>
   </header>
@@ -388,7 +389,7 @@ function refreshAllUI() {
   calculatePodium();
 }
 
-function loadMatch(stage, id) { currentStage = stage; currentMatchId = id; syncScoreboardFromData(); }
+function loadMatch(stage, id) { currentStage = stage; currentMatchId = id; syncScoreboardFromData(); refreshAllUI(); }
 
 function syncScoreboardFromData() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId); if(!match) return;
@@ -424,6 +425,7 @@ function updateWinFlash(match) {
   if(match.winner === 'red') rFlash.classList.add('show'); else if(match.winner === 'blue') bFlash.classList.add('show');
 }
 
+// ── 【功能升級：按下晉級後，兩邊同步全自動導航下一場】 ──
 function saveAndAdvance() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   const rScore = match.redScore; const bScore = match.blueScore;
@@ -443,9 +445,28 @@ function saveAndAdvance() {
     else { tournamentData.r2[0].blue = loserName; tournamentData.r2[1].blue = winnerName; }
   }
   
-  saveTournamentData(); refreshAllUI();
-  // 自動導航至下一場
-  if(currentMatchId < tournamentData[currentStage].length) loadMatch(currentStage, currentMatchId + 1);
+  // 核心自動導航邏輯
+  let nextStage = currentStage;
+  let nextMatchId = currentMatchId + 1;
+  
+  // 當這組打完時，自動跳往下個大階級的第一場
+  if (nextMatchId > tournamentData[currentStage].length) {
+    if (currentStage === 'r32') { nextStage = 'r16'; nextMatchId = 1; }
+    else if (currentStage === 'r16') { nextStage = 'r8'; nextMatchId = 1; }
+    else if (currentStage === 'r8') { nextStage = 'r4'; nextMatchId = 1; }
+    else if (currentStage === 'r4') { nextStage = 'r2'; nextMatchId = 1; }
+  }
+
+  saveTournamentData();
+  
+  if(currentStage === 'r2') {
+    if(currentMatchId === 2) alert(`🎉 恭喜【${winnerName}】榮獲總冠軍🏆！！可以前往榮譽牆分頁進行拍照囉！`);
+    else alert(`🥉 恭喜【${winnerName}】贏得季軍！`);
+    refreshAllUI();
+  } else {
+    // 💥 連動點擊：呼叫 loadMatch 自動跳下一局，計分板與樹狀圖 LIVE 高亮框一併移過去！
+    loadMatch(nextStage, nextMatchId);
+  }
 }
 
 function resetCurrentMatch() {
