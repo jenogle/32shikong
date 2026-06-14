@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>失控陀螺爭霸賽 - 雙開單頁控制台</title>
+<title>失控陀螺爭霸賽 - 雙翼對稱單頁台</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
 
@@ -32,7 +32,7 @@ body {
   color: var(--text);
   font-family: 'Noto Sans TC', sans-serif;
   height: 100vh;
-  overflow: hidden; /* 徹底鎖死滾動條，確保一頁看完 */
+  overflow: hidden; /* 徹底鎖死縱向與橫向滾動 */
   display: flex;
   flex-direction: column;
 }
@@ -44,192 +44,169 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background: rgba(13, 13, 26, 0.8);
+  padding: 5px 20px;
+  background: rgba(13, 13, 26, 0.9);
   border-bottom: 1px solid var(--border);
-  height: 60px;
+  height: 50px;
 }
 .header-left { display: flex; align-items: center; gap: 10px; }
-.gyro-icon { font-size: 1.6rem; animation: gyroSpin 2s linear infinite; }
+.gyro-icon { font-size: 1.3rem; animation: gyroSpin 2s linear infinite; }
 @keyframes gyroSpin { to { transform: rotate(360deg); } }
 .site-title {
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   letter-spacing: 0.05em;
   background: linear-gradient(90deg, var(--red) 0%, #fff 50%, var(--blue) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.site-sub { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.site-sub { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
 
 .photo-wall-btn {
-  padding: 6px 14px;
+  padding: 4px 12px;
   border-radius: 4px;
   border: 1px solid var(--gold);
   background: transparent;
   color: var(--gold);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(255,215,0,0.1);
   transition: all 0.2s;
 }
-.photo-wall-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+.photo-wall-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 12px var(--gold-glow); }
 
-/* ── 核心：左右雙開版面 ── */
-.split-container {
+/* ── 核心：全螢幕三欄版面 ── */
+.main-layout {
   display: flex;
+  flex-direction: column;
   flex: 1;
-  height: calc(100vh - 60px);
-  width: 100vw;
+  height: calc(100vh - 50px);
 }
 
-/* 左半邊：計分控制台 */
-.left-panel {
-  width: 35%;
-  border-right: 1px solid var(--border);
-  background: rgba(10, 10, 20, 0.4);
-  padding: 20px;
+/* 上半部：雙翼對稱樹狀圖（橫跨全寬） */
+.bracket-container {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: #030308;
+  height: 65%;
+}
+
+.wing {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  height: 100%;
+  width: 44%;
+}
+.wing.left-wing { justify-content: flex-start; }
+.wing.right-wing { justify-content: flex-end; flex-direction: row-reverse; } /* 右翼鏡面反轉 */
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
+  width: 31%;
+}
+.round-header-label { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 0.6rem; font-weight: 900; color: var(--gold); margin-bottom: 2px; }
+
+/* 中央決賽孤島 */
+.center-final-zone {
+  width: 12%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 20px;
+  align-items: center;
+  gap: 15px;
+  border-left: 1px dashed rgba(30,30,48,0.5);
+  border-right: 1px dashed rgba(30,30,48,0.5);
+  padding: 0 5px;
 }
 
-.match-selector-row {
+/* 樹狀小卡片 */
+.tree-match-group { display: flex; flex-direction: column; justify-content: center; position: relative; width: 100%; margin: 2px 0; }
+.tcard { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
+.tcard.is-live { border-color: var(--gold); box-shadow: 0 0 8px rgba(255,215,0,0.25); }
+.tcard-header { font-size: 0.5rem; padding: 1px 4px; color: var(--muted); border-bottom: 1px solid rgba(30,30,48,0.5); display: flex; justify-content: space-between; }
+.tcard-header .live-tag { background: var(--gold); color: #000; padding: 0 2px; border-radius: 1px; font-weight: 900; }
+.tcard-team { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.68rem; font-weight: 700; height: 18px; }
+.tcard-team.p-red { border-left: 2px solid var(--red); }
+.tcard-team.p-blue { border-left: 2px solid var(--blue); border-top: 1px solid rgba(30,30,48,0.2); }
+.tcard-team .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 75px; color: #a0a0c0; }
+.tcard-team .score { font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--muted); }
+.tcard-team.winner .name { color: #fff; font-weight: 900; }
+.tcard-team.winner .score { color: var(--gold); }
+
+/* ── 下半部：中控台計分板（置中微調） ── */
+.control-container {
+  height: 35%;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.match-selector-row label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
-.match-select {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px;
-  border-radius: 4px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  cursor: pointer;
-  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 40px;
+  gap: 40px;
 }
 
-.live-panel {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: inset 2px 0 20px rgba(255,30,45,0.05), inset -2px 0 20px rgba(21,101,255,0.05);
-}
-.side { display: flex; flex-direction: column; align-items: center; padding: 25px 10px; gap: 12px; }
-.side.red-side  { background: linear-gradient(135deg, rgba(255,30,45,0.1) 0%, transparent 80%); }
-.side.blue-side { background: linear-gradient(225deg, rgba(21,101,255,0.1) 0%, transparent 80%); }
-.team-name-live { font-weight: 900; font-size: 1.1rem; text-align: center; word-break: break-all; min-height: 2.4em; display: flex; align-items: center; }
+.control-left { width: 220px; display: flex; flex-direction: column; gap: 8px; }
+.match-selector-row { display: flex; flex-direction: column; gap: 4px; }
+.match-selector-row label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
+.match-select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 6px; border-radius: 4px; font-weight: 700; font-size: 0.75rem; cursor: pointer; }
+
+.control-center-board { display: grid; grid-template-columns: 180px auto 180px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.side { display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 6px; }
+.side.red-side  { background: linear-gradient(135deg, rgba(255,30,45,0.08) 0%, transparent 80%); }
+.side.blue-side { background: linear-gradient(225deg, rgba(21,101,255,0.08) 0%, transparent 80%); }
+.team-name-live { font-weight: 900; font-size: 0.9rem; text-align: center; word-break: break-all; min-height: 2em; display: flex; align-items: center; }
 .red-side .team-name-live { color: #fff; text-shadow: 0 0 10px var(--red-glow); }
 .blue-side .team-name-live { color: #fff; text-shadow: 0 0 10px var(--blue-glow); }
+.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.2rem; line-height: 1; }
+.red-side .big-score { color: var(--red); }
+.blue-side .big-score { color: var(--blue); }
+.big-score.bump { animation: scoreBump 0.15s ease-out; }
 
-.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 4rem; line-height: 1; }
-.red-side .big-score { color: var(--red); text-shadow: 0 0 20px var(--red-glow); }
-.blue-side .big-score { color: var(--blue); text-shadow: 0 0 20px var(--blue-glow); }
-.big-score.bump { animation: scoreBump 0.2s ease-out; }
-@keyframes scoreBump { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-
-.score-btn { width: 36px; height: 36px; border-radius: 4px; border: 2px solid; background: transparent; font-size: 1.2rem; font-weight: 900; cursor: pointer; font-family: 'Orbitron', sans-serif; }
+.score-btn { width: 28px; height: 28px; border-radius: 3px; border: 1px solid; background: transparent; font-size: 1rem; font-weight: 900; cursor: pointer; }
 .red-side .score-btn { border-color: var(--red-dim); color: var(--red); }
 .blue-side .score-btn { border-color: var(--blue-dim); color: var(--blue); }
 .red-side .score-btn:hover { background: var(--red); color: #fff; }
 .blue-side .score-btn:hover { background: var(--blue); color: #fff; }
-.score-btn.minus { font-size: 1.4rem; }
-
-.win-flash { font-size: 0.65rem; font-weight: 900; padding: 2px 6px; border-radius: 2px; opacity: 0; min-height: 18px; }
+.win-flash { font-size: 0.55rem; font-weight: 900; padding: 1px 4px; border-radius: 2px; opacity: 0; }
 .win-flash.show { opacity: 1; }
-.red-side .win-flash { background: var(--red); color: #fff; }
-.blue-side .win-flash { background: var(--blue); color: #fff; }
 
-.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 60px; }
-.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900; color: var(--muted); }
-.round-badge { padding: 2px 4px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.55rem; color: var(--text); background: var(--bg); text-align: center; white-space: nowrap; }
-.match-info-badge { font-size: 0.55rem; color: var(--muted); }
+.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 15px; }
+.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 900; color: var(--muted); }
+.round-badge { padding: 2px 4px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.5rem; color: var(--text); background: var(--panel); white-space: nowrap; }
 
-.action-row { display: flex; flex-direction: column; gap: 8px; }
-.action-btn { padding: 10px; border-radius: 4px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font-weight: 700; font-size: 0.8rem; cursor: pointer; width: 100%; }
-.action-btn.confirm-btn { background: linear-gradient(90deg, var(--red-dim), var(--blue-dim)); border-color: transparent; color: #fff; }
-.action-btn.confirm-btn:hover { background: linear-gradient(90deg, var(--red), var(--blue)); box-shadow: 0 0 15px rgba(150,50,150,0.4); }
-.action-btn.danger-btn { border-color: rgba(255, 30, 45, 0.2); color: #ff5252; font-size: 0.7rem; padding: 6px; }
+.control-right { display: flex; flex-direction: column; gap: 6px; width: 160px; }
+.action-btn { padding: 6px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; font-size: 0.72rem; cursor: pointer; text-align: center; }
+.action-btn.confirm-btn { background: linear-gradient(90deg, var(--red-dim), var(--blue-dim)); border-color: transparent; color: #fff; font-size: 0.75rem; padding: 8px; }
+.action-btn.confirm-btn:hover { background: linear-gradient(90deg, var(--red), var(--blue)); }
+.action-btn.danger-btn { border-color: rgba(255, 30, 45, 0.15); color: #ff5252; font-size: 0.65rem; padding: 4px; }
 
-/* 右半邊：極致壓縮版 樹狀賽程圖 */
-.right-panel {
-  width: 65%;
-  background: var(--bg);
-  overflow-x: auto;
-  overflow-y: hidden;
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-}
-.bracket-tree { display: flex; gap: 25px; align-items: center; height: 100%; }
-.bracket-round { display: flex; flex-direction: column; justify-content: space-around; height: 100%; min-width: 150px; }
-.round-header-label { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; font-weight: 900; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 5px; }
-
-/* 樹狀對戰小方塊 */
-.tree-match-group { display: flex; flex-direction: column; justify-content: center; margin: 4px 0; position: relative; width: 160px; }
-
-/* 壓縮版連線系統 */
-.bracket-round:not(:last-child) .tree-match-group::after { content: ''; position: absolute; right: -15px; top: 50%; width: 15px; height: 1px; background: var(--border); z-index: 1; }
-.bracket-round:not(:first-child) .tree-match-group::before { content: ''; position: absolute; left: -12px; top: 50%; width: 12px; height: 1px; background: var(--border); z-index: 1; }
-.bracket-round:not(:last-child) .tree-match-group:nth-child(even)::after { height: calc(50% + 14px); top: 50%; border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); background: transparent; }
-.bracket-round:not(:last-child) .tree-match-group:nth-child(odd)::after { height: calc(50% + 14px); top: calc(50% - (50% + 14px)); border-left: 1px solid var(--border); border-top: 1px solid var(--border); background: transparent; }
-#round-r4 .tree-match-group:nth-child(odd)::after { height: calc(100% + 65px); top:-65px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); border-left:1px solid var(--border); }
-#round-r4 .tree-match-group:nth-child(even)::after { display: none; }
-
-.tcard { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
-.tcard:hover { border-color: var(--muted); }
-.tcard.is-live { border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.2); }
-.tcard-header { font-size: 0.5rem; padding: 2px 6px; color: var(--muted); border-bottom: 1px solid rgba(30,30,48,0.5); display: flex; justify-content: space-between; }
-.tcard-header .live-tag { background: var(--gold); color: #000; padding: 0 2px; border-radius: 1px; font-weight: 900; }
-.tcard-team { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; font-size: 0.7rem; font-weight: 700; height: 22px; }
-.tcard-team.p-red { border-left: 2px solid var(--red); }
-.tcard-team.p-blue { border-left: 2px solid var(--blue); border-top: 1px solid rgba(30,30,48,0.2); }
-.tcard-team .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; color: #a0a0c0; }
-.tcard-team .score { font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--muted); }
-.tcard-team.winner .name { color: #fff; font-weight: 900; }
-.tcard-team.winner .score { color: var(--gold); }
-.finals-wrapper { display: flex; flex-direction: column; gap: 40px; }
-
-/* ── 彈出式：榮譽殿堂大視窗 ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4,4,8,0.95);
-  z-index: 100;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
+/* ── 彈出式拍照牆 ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(4,4,8,0.96); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.active { display: flex; }
-.podium-container { width: 100%; max-width: 800px; padding: 40px; background: var(--panel); border: 2px solid var(--gold); border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(255,215,0,0.15); position: relative; }
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: var(--muted); cursor: pointer; font-weight: 700; }
-.close-modal:hover { color: #fff; }
-.podium-title { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.2rem; color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); margin-bottom: 30px; }
-.podium-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-.podium-box { background: rgba(6,6,14,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+.podium-container { width: 100%; max-width: 750px; padding: 30px; background: var(--panel); border: 2px solid var(--gold); border-radius: 12px; text-align: center; box-shadow: 0 0 40px rgba(255,215,0,0.15); position: relative; }
+.close-modal { position: absolute; top: 10px; right: 15px; font-size: 1.4rem; color: var(--muted); cursor: pointer; }
+.podium-title { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2rem; color: var(--gold); text-shadow: 0 0 10px var(--gold-glow); margin-bottom: 25px; }
+.podium-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.podium-box { background: rgba(6,6,14,0.8); border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; align-items: center; }
 .podium-box.rank-1 { grid-column: span 2; border-color: var(--gold); background: linear-gradient(180deg, rgba(255,215,0,0.05) 0%, transparent 100%); }
 .podium-box.rank-2 { border-color: var(--silver); }
 .podium-box.rank-3 { border-color: var(--bronze); }
 .podium-box.rank-4 { border-color: var(--muted); }
-.medal-icon { font-size: 2.5rem; margin-bottom: 5px; }
-.rank-label { font-size: 0.7rem; font-weight: 900; margin-bottom: 5px; letter-spacing: 0.1em; }
+.medal-icon { font-size: 2.2rem; margin-bottom: 4px; }
+.rank-label { font-size: 0.65rem; font-weight: 900; margin-bottom: 4px; }
 .rank-1 .rank-label { color: var(--gold); }
-.rank-2 .rank-label { color: var(--silver); }
-.rank-3 .rank-label { color: var(--bronze); }
-.rank-4 .rank-label { color: var(--muted); }
-.winner-name { font-size: 1.4rem; font-weight: 900; color: #fff; }
-.rank-1 .winner-name { font-size: 2.2rem; text-shadow: 0 0 20px var(--gold-glow); }
+.winner-name { font-size: 1.2rem; font-weight: 900; color: #fff; }
+.rank-1 .winner-name { font-size: 2rem; text-shadow: 0 0 15px var(--gold-glow); }
 </style>
 </head>
 <body>
@@ -238,23 +215,46 @@ body {
     <div class="header-left">
       <div class="gyro-icon">🌀</div>
       <h1 class="site-title">失控陀螺爭霸賽</h1>
-      <span class="site-sub">單頁極致雙開台</span>
+      <span class="site-sub">雙翼對稱免滾動控台</span>
     </div>
     <button class="photo-wall-btn" onclick="toggleModal(true)">🏆 榮譽拍照牆</button>
   </header>
 
-  <div class="split-container">
+  <div class="main-layout">
     
-    <div class="left-panel">
-      <div class="match-selector-row">
-        <label for="match-select">控制目標賽局</label>
-        <select id="match-select" class="match-select" onchange="loadSelectedMatch()"></select>
+    <div class="bracket-container">
+      
+      <div class="wing left-wing">
+        <div class="bracket-round" id="wingL-r32"><div class="round-header-label">32強賽 (左)</div></div>
+        <div class="bracket-round" id="wingL-r16"><div class="round-header-label">16強 (左)</div></div>
+        <div class="bracket-round" id="wingL-r8"><div class="round-header-label">8強 (左)</div></div>
       </div>
 
-      <div class="live-panel">
+      <div class="center-final-zone">
+        <div class="round-header-label" style="color:var(--red)">準決賽/決賽</div>
+        <div class="tree-match-group" id="center-r4-1"></div> <div class="tree-match-group" id="center-r2-1"></div> <div class="tree-match-group" id="center-r2-2"></div> <div class="tree-match-group" id="center-r4-2"></div> </div>
+
+      <div class="wing right-wing">
+        <div class="bracket-round" id="wingR-r32"><div class="round-header-label">32強賽 (右)</div></div>
+        <div class="bracket-round" id="wingR-r16"><div class="round-header-label">16強 (右)</div></div>
+        <div class="bracket-round" id="wingR-r8"><div class="round-header-label">8強 (右)</div></div>
+      </div>
+
+    </div>
+
+    <div class="control-container">
+      
+      <div class="control-left">
+        <div class="match-selector-row">
+          <label for="match-select">控制目標賽局</label>
+          <select id="match-select" class="match-select" onchange="loadSelectedMatch()"></select>
+        </div>
+      </div>
+
+      <div class="control-center-board">
         <div class="side red-side">
           <span class="side-label">RED</span>
-          <div id="live-red-name" class="team-name-live">紅方</div>
+          <div id="live-red-name" class="team-name-live">-</div>
           <div id="live-red-score" class="big-score">0</div>
           <div class="btn-row">
             <button class="score-btn minus" onclick="adjustScore('red', -1)">-</button>
@@ -269,7 +269,7 @@ body {
         </div>
         <div class="side blue-side">
           <span class="side-label">BLUE</span>
-          <div id="live-blue-name" class="team-name-live">藍方</div>
+          <div id="live-blue-name" class="team-name-live">-</div>
           <div id="live-blue-score" class="big-score">0</div>
           <div class="btn-row">
             <button class="score-btn minus" onclick="adjustScore('blue', -1)">-</button>
@@ -279,26 +279,13 @@ body {
         </div>
       </div>
 
-      <div class="action-row">
+      <div class="control-right">
         <button class="action-btn confirm-btn" onclick="saveAndAdvance()">確認勝出並晉級</button>
         <button class="action-btn" onclick="resetCurrentMatch()">重設單場</button>
-        <button class="action-btn danger-btn" onclick="clearTournament()">重置整個賽事數據</button>
+        <button class="action-btn danger-btn" onclick="clearTournament()">重置賽事數據</button>
       </div>
-    </div>
 
-    <div class="right-panel">
-      <div class="bracket-tree">
-        <div class="bracket-round" id="round-r32"><div class="round-header-label">32強賽</div></div>
-        <div class="bracket-round" id="round-r16"><div class="round-header-label">16強</div></div>
-        <div class="bracket-round" id="round-r8"><div class="round-header-label">8強</div></div>
-        <div class="bracket-round" id="round-r4"><div class="round-header-label">4強</div></div>
-        <div class="bracket-round" id="round-r2">
-          <div class="round-header-label">決賽圈</div>
-          <div class="finals-wrapper" id="grid-tree-r2"></div>
-        </div>
-      </div>
     </div>
-
   </div>
 
   <div class="modal-overlay" id="photo-modal">
@@ -326,9 +313,9 @@ let tournamentData = { r32: [], r16: [], r8: [], r4: [], r2: [] };
 const stagesConfig = [
   { key: 'r32', name: '32強賽', badge: 'R32' },
   { key: 'r16', name: '16強賽', badge: 'R16' },
-  { key: 'r8',  name: '8強半準決賽', badge: 'R8' },
-  { key: 'r4',  name: '4強準決賽', badge: 'R4' },
-  { key: 'r2',  name: '總決賽階級', badge: 'FINALS' }
+  { key: 'r8',  name: '8強賽', badge: 'R8' },
+  { key: 'r4',  name: '4強賽', badge: 'R4' },
+  { key: 'r2',  name: '決賽圈', badge: 'FINALS' }
 ];
 let currentStage = 'r32'; let currentMatchId = 1;
 
@@ -375,9 +362,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function refreshAllUI() {
   renderSelectOptions();
-  renderTreeRound('r32', 'round-r32'); renderTreeRound('r16', 'round-r16');
-  renderTreeRound('r8', 'round-r8'); renderTreeRound('r4', 'round-r4');
-  renderTreeRound('r2', 'grid-tree-r2'); calculatePodium();
+  // 渲染左翼 (M1~M8) 與 右翼 (M9~M16)
+  renderWing('r32', 1, 8, 'wingL-r32'); renderWing('r32', 9, 16, 'wingR-r32');
+  renderWing('r16', 1, 4, 'wingL-r16'); renderWing('r16', 5, 8, 'wingR-r16');
+  renderWing('r8',  1, 2, 'wingL-r8');  renderWing('r8',  3, 4, 'wingR-r8');
+  
+  // 渲染中央決賽島
+  renderSingleMatchCard('r4', 1, 'center-r4-1');
+  renderSingleMatchCard('r4', 2, 'center-r4-2');
+  renderSingleMatchCard('r2', 1, 'center-r2-1'); // 季軍
+  renderSingleMatchCard('r2', 2, 'center-r2-2'); // 冠軍
+  calculatePodium();
 }
 
 function renderSelectOptions() {
@@ -388,7 +383,7 @@ function renderSelectOptions() {
     tournamentData[cfg.key].forEach(m => {
       let opt = document.createElement("option"); opt.value = `${cfg.key}-${m.id}`;
       let txt = `M${m.id}：${m.red} VS ${m.blue}`;
-      if(cfg.key === 'r2') txt = m.id === 2 ? `👑 冠軍賽：${m.red}` : `🥉 季軍賽：${m.red}`;
+      if(cfg.key === 'r2') txt = m.id === 2 ? `👑 冠軍賽` : `🥉 季軍賽`;
       if(m.winner) txt += " (已完賽)";
       opt.innerText = txt; grp.appendChild(opt);
     });
@@ -466,28 +461,46 @@ function resetCurrentMatch() {
 
 function selectMatchFromGrid(stage, id) { loadMatch(stage, id); }
 
-function renderTreeRound(stage, targetContainerId) {
-  const container = document.getElementById(targetContainerId); if (!container) return;
-  if (stage !== 'r2') {
-    const header = container.querySelector('.round-header-label');
-    container.innerHTML = ""; if (header) container.appendChild(header);
-  } else { container.innerHTML = ""; }
+// 分流渲染左翼或右翼
+function renderWing(stage, startId, endId, containerId) {
+  const container = document.getElementById(containerId); if(!container) return;
+  const header = container.querySelector('.round-header-label');
+  container.innerHTML = ""; if(header) container.appendChild(header);
 
-  tournamentData[stage].forEach(m => {
-    const isLive = (currentStage === stage && currentMatchId === m.id);
+  for(let id = startId; id <= endId; id++) {
+    const m = tournamentData[stage].find(item => item.id === id); if(!m) continue;
     const group = document.createElement("div"); group.className = "tree-match-group";
-    let lbl = `M${m.id}`; if(stage === 'r2') lbl = m.id === 2 ? "👑 冠軍賽" : "🥉 季軍賽";
+    const isLive = (currentStage === stage && currentMatchId === m.id);
     const wRed = m.winner === 'red' ? 'winner' : ''; const wBlue = m.winner === 'blue' ? 'winner' : '';
 
     group.innerHTML = `
       <div class="tcard ${isLive ? 'is-live' : ''}" onclick="selectMatchFromGrid('${stage}', ${m.id})">
-        <div class="tcard-header"><span>${lbl}</span>${isLive ? '<span class="live-tag">LIVE</span>' : ''}</div>
+        <div class="tcard-header"><span>M${m.id}</span></div>
         <div class="tcard-team p-red ${wRed}"><span class="name">${m.red}</span><span class="score">${m.redScore}</span></div>
         <div class="tcard-team p-blue ${wBlue}"><span class="name">${m.blue}</span><span class="score">${m.blueScore}</span></div>
       </div>
     `;
     container.appendChild(group);
-  });
+  }
+}
+
+// 渲染中央孤島獨立卡片
+function renderSingleMatchCard(stage, id, containerId) {
+  const container = document.getElementById(containerId); if(!container) return;
+  container.innerHTML = "";
+  const m = tournamentData[stage].find(item => item.id === id); if(!m) return;
+  
+  const isLive = (currentStage === stage && currentMatchId === m.id);
+  let lbl = `4強 M${id}`; if(stage === 'r2') lbl = id === 2 ? "👑 冠軍賽" : "🥉 季軍賽";
+  const wRed = m.winner === 'red' ? 'winner' : ''; const wBlue = m.winner === 'blue' ? 'winner' : '';
+
+  container.innerHTML = `
+    <div class="tcard ${isLive ? 'is-live' : ''}" style="width:100%" onclick="selectMatchFromGrid('${stage}', ${m.id})">
+      <div class="tcard-header"><span>${lbl}</span></div>
+      <div class="tcard-team p-red ${wRed}"><span class="name">${m.red}</span><span class="score">${m.redScore}</span></div>
+      <div class="tcard-team p-blue ${wBlue}"><span class="name">${m.blue}</span><span class="score">${m.blueScore}</span></div>
+    </div>
+  `;
 }
 
 function calculatePodium() {
