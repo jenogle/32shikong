@@ -32,7 +32,7 @@ body {
   color: var(--text);
   font-family: 'Noto Sans TC', sans-serif;
   height: 100vh;
-  overflow: hidden; /* 徹底鎖死縱向與橫向滾動 */
+  overflow: hidden; /* 鎖死滾動條 */
   display: flex;
   flex-direction: column;
 }
@@ -77,7 +77,7 @@ body {
 }
 .photo-wall-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 12px var(--gold-glow); }
 
-/* ── 核心：全螢幕三欄版面 ── */
+/* ── MAIN LAYOUT ── */
 .main-layout {
   display: flex;
   flex-direction: column;
@@ -115,7 +115,7 @@ body {
 }
 .round-header-label { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 0.6rem; font-weight: 900; color: var(--gold); margin-bottom: 2px; }
 
-/* 中央決賽孤島 */
+/* 中央決賽核心島 */
 .center-final-zone {
   width: 12%;
   height: 100%;
@@ -129,12 +129,11 @@ body {
   padding: 0 5px;
 }
 
-/* 樹狀小卡片 */
+/* 樹狀卡片 */
 .tree-match-group { display: flex; flex-direction: column; justify-content: center; position: relative; width: 100%; margin: 2px 0; }
 .tcard { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
 .tcard.is-live { border-color: var(--gold); box-shadow: 0 0 8px rgba(255,215,0,0.25); }
 .tcard-header { font-size: 0.5rem; padding: 1px 4px; color: var(--muted); border-bottom: 1px solid rgba(30,30,48,0.5); display: flex; justify-content: space-between; }
-.tcard-header .live-tag { background: var(--gold); color: #000; padding: 0 2px; border-radius: 1px; font-weight: 900; }
 .tcard-team { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.68rem; font-weight: 700; height: 18px; }
 .tcard-team.p-red { border-left: 2px solid var(--red); }
 .tcard-team.p-blue { border-left: 2px solid var(--blue); border-top: 1px solid rgba(30,30,48,0.2); }
@@ -143,7 +142,7 @@ body {
 .tcard-team.winner .name { color: #fff; font-weight: 900; }
 .tcard-team.winner .score { color: var(--gold); }
 
-/* ── 下半部：一體化中控計分台（移除 RED/BLUE 標籤，大幅放大名稱） ── */
+/* ── 下半部：中控計分台（選單已拔除，左右兩側極致拉寬放寬姓名） ── */
 .control-container {
   height: 35%;
   background: var(--panel);
@@ -151,61 +150,65 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 40px;
-  gap: 30px;
+  padding: 10px 20px;
+  gap: 20px;
 }
 
-.control-left { width: 220px; display: flex; flex-direction: column; gap: 8px; }
-.match-selector-row { display: flex; flex-direction: column; gap: 4px; }
-.match-selector-row label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
-.match-select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 6px; border-radius: 4px; font-weight: 700; font-size: 0.75rem; cursor: pointer; }
-
-.control-center-board { display: grid; grid-template-columns: 240px auto 240px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-.side { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 10px; gap: 10px; position: relative; }
+/* 中央主控板：直接放大寬度，吞噬原本選單的空間 */
+.control-center-board { 
+  display: grid; 
+  grid-template-columns: 320px auto 320px; /* 從 240px 暴增到 320px，長名字絕不被切斷 */
+  background: var(--bg); 
+  border: 1px solid var(--border); 
+  border-radius: 6px; 
+  overflow: hidden; 
+}
+.side { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 15px; gap: 8px; position: relative; }
 .side.red-side  { background: linear-gradient(135deg, rgba(255,30,45,0.08) 0%, transparent 80%); }
 .side.blue-side { background: linear-gradient(225deg, rgba(21,101,255,0.08) 0%, transparent 80%); }
 
-/* 💥 重點優化：大幅放大計分板參賽者名稱 💥 */
 .team-name-live { 
   font-weight: 900; 
-  font-size: 1.6rem; /* 從 0.9rem 直接暴拉到 1.6rem */
+  font-size: 1.8rem; /* 字體再加大！ */
   text-align: center; 
   word-break: break-all; 
-  min-height: 1.5em; 
+  min-height: 1.4em; 
   display: flex; 
   align-items: center; 
   justify-content: center;
   letter-spacing: 0.05em;
+  width: 100%;
 }
 .red-side .team-name-live { color: #fff; text-shadow: 0 0 15px var(--red-glow); }
 .blue-side .team-name-live { color: #fff; text-shadow: 0 0 15px var(--blue-glow); }
 
-.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.5rem; line-height: 1; }
+.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.8rem; line-height: 1; }
 .red-side .big-score { color: var(--red); }
 .blue-side .big-score { color: var(--blue); }
 .big-score.bump { animation: scoreBump 0.15s ease-out; }
 
-/* 微調加減分按鈕 */
-.btn-row { display: flex; gap: 8px; }
-.score-btn { width: 32px; height: 32px; border-radius: 4px; border: 1px solid; background: transparent; font-size: 1.1rem; font-weight: 900; cursor: pointer; }
+.btn-row { display: flex; gap: 10px; }
+.score-btn { width: 36px; height: 36px; border-radius: 4px; border: 1px solid; background: transparent; font-size: 1.2rem; font-weight: 900; cursor: pointer; }
 .red-side .score-btn { border-color: var(--red-dim); color: var(--red); }
 .blue-side .score-btn { border-color: var(--blue-dim); color: var(--blue); }
 .red-side .score-btn:hover { background: var(--red); color: #fff; }
 .blue-side .score-btn:hover { background: var(--blue); color: #fff; }
 
-.win-flash { font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 2px; opacity: 0; margin-top: 2px; }
+.win-flash { font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 2px; opacity: 0; margin-top: 2px; }
 .win-flash.show { opacity: 1; }
 .red-side .win-flash { background: var(--red); color: #fff; }
 .blue-side .win-flash { background: var(--blue); color: #fff; }
 
-.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0 20px; }
-.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 900; color: var(--muted); }
-.round-badge { padding: 3px 6px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.55rem; color: var(--text); background: var(--panel); white-space: nowrap; font-weight: 700; }
+.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0 25px; min-width: 100px; }
+.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--muted); }
+.round-badge { padding: 3px 6px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.6rem; color: var(--text); background: var(--panel); white-space: nowrap; font-weight: 700; }
+.match-info-badge { font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
 
+/* 右側功能按鈕區 */
 .control-right { display: flex; flex-direction: column; gap: 6px; width: 160px; }
 .action-btn { padding: 6px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; font-size: 0.72rem; cursor: pointer; text-align: center; }
-.action-btn.confirm-btn { background: linear-gradient(90deg, var(--red-dim), var(--blue-dim)); border-color: transparent; color: #fff; font-size: 0.75rem; padding: 8px; }
-.action-btn.confirm-btn:hover { background: linear-gradient(90deg, var(--red), var(--blue)); }
+.action-btn.confirm-btn { background: linear-gradient(90deg, var(--red-dim), var(--blue-dim)); border-color: transparent; color: #fff; font-size: 0.75rem; padding: 10px; }
+.action-btn.confirm-btn:hover { background: linear-gradient(90deg, var(--red), var(--blue)); box-shadow: 0 0 10px rgba(150,50,150,0.3); }
 .action-btn.danger-btn { border-color: rgba(255, 30, 45, 0.15); color: #ff5252; font-size: 0.65rem; padding: 4px; }
 
 /* ── 彈出式拍照牆 ── */
@@ -233,7 +236,7 @@ body {
     <div class="header-left">
       <div class="gyro-icon">🌀</div>
       <h1 class="site-title">失控陀螺爭霸賽</h1>
-      <span class="site-sub">雙翼對稱免滾動控台</span>
+      <span class="site-sub">直覺點擊控制台</span>
     </div>
     <button class="photo-wall-btn" onclick="toggleModal(true)">🏆 榮譽拍照牆</button>
   </header>
@@ -250,7 +253,9 @@ body {
 
       <div class="center-final-zone">
         <div class="round-header-label" style="color:var(--red)">準決賽/決賽</div>
-        <div class="tree-match-group" id="center-r4-1"></div> <div class="tree-match-group" id="center-r2-1"></div> <div class="tree-match-group" id="center-r2-2"></div> <div class="tree-match-group" id="center-r4-2"></div> </div>
+        <div class="tree-match-group" id="center-r4-1"></div>
+        <div class="tree-match-group" id="center-r2-1"></div> <div class="tree-match-group" id="center-r2-2"></div> <div class="tree-match-group" id="center-r4-2"></div>
+      </div>
 
       <div class="wing right-wing">
         <div class="bracket-round" id="wingR-r32"><div class="round-header-label">32強賽 (右)</div></div>
@@ -262,13 +267,6 @@ body {
 
     <div class="control-container">
       
-      <div class="control-left">
-        <div class="match-selector-row">
-          <label for="match-select">控制目標賽局</label>
-          <select id="match-select" class="match-select" onchange="loadSelectedMatch()"></select>
-        </div>
-      </div>
-
       <div class="control-center-board">
         <div class="side red-side">
           <div id="live-red-name" class="team-name-live">-</div>
@@ -329,11 +327,11 @@ const playersList = [
 
 let tournamentData = { r32: [], r16: [], r8: [], r4: [], r2: [] };
 const stagesConfig = [
-  { key: 'r32', name: '32強賽', badge: 'R32' },
-  { key: 'r16', name: '16強賽', badge: 'R16' },
-  { key: 'r8',  name: '8強賽', badge: 'R8' },
-  { key: 'r4',  name: '4強賽', badge: 'R4' },
-  { key: 'r2',  name: '決賽圈', badge: 'FINALS' }
+  { key: 'r32', badge: 'R32' },
+  { key: 'r16', badge: 'R16' },
+  { key: 'r8',  badge: 'R8' },
+  { key: 'r4',  badge: 'R4' },
+  { key: 'r2',  badge: 'FINALS' }
 ];
 let currentStage = 'r32'; let currentMatchId = 1;
 
@@ -379,7 +377,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function refreshAllUI() {
-  renderSelectOptions();
   renderWing('r32', 1, 8, 'wingL-r32'); renderWing('r32', 9, 16, 'wingR-r32');
   renderWing('r16', 1, 4, 'wingL-r16'); renderWing('r16', 5, 8, 'wingR-r16');
   renderWing('r8',  1, 2, 'wingL-r8');  renderWing('r8',  3, 4, 'wingR-r8');
@@ -391,40 +388,21 @@ function refreshAllUI() {
   calculatePodium();
 }
 
-function renderSelectOptions() {
-  const select = document.getElementById("match-select"); if (!select) return;
-  const currentVal = select.value; select.innerHTML = "";
-  stagesConfig.forEach(cfg => {
-    let grp = document.createElement("optgroup"); grp.label = `【${cfg.name}】`;
-    tournamentData[cfg.key].forEach(m => {
-      let opt = document.createElement("option"); opt.value = `${cfg.key}-${m.id}`;
-      let txt = `M${m.id}：${m.red} VS ${m.blue}`;
-      if(cfg.key === 'r2') txt = m.id === 2 ? `👑 冠軍賽` : `🥉 季軍賽`;
-      if(m.winner) txt += " (已完賽)";
-      opt.innerText = txt; grp.appendChild(opt);
-    });
-    select.appendChild(grp);
-  });
-  if (currentVal) select.value = currentVal;
-}
-
-function loadSelectedMatch() {
-  const val = document.getElementById("match-select").value.split('-');
-  loadMatch(val[0], parseInt(val[1]));
-}
-
 function loadMatch(stage, id) { currentStage = stage; currentMatchId = id; syncScoreboardFromData(); }
 
 function syncScoreboardFromData() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId); if(!match) return;
   const cfg = stagesConfig.find(c => c.key === currentStage);
   document.getElementById("live-round-title").innerText = cfg.badge;
-  document.getElementById("live-match-id").innerText = `M${currentMatchId}`;
+  
+  let matchLabel = `M${currentMatchId}`;
+  if(currentStage === 'r2') matchLabel = currentMatchId === 2 ? "冠軍賽" : "季軍賽";
+  document.getElementById("live-match-id").innerText = matchLabel;
+  
   document.getElementById("live-red-name").innerText = match.red;
   document.getElementById("live-blue-name").innerText = match.blue;
   document.getElementById("live-red-score").innerText = match.redScore;
   document.getElementById("live-blue-score").innerText = match.blueScore;
-  document.getElementById("match-select").value = `${currentStage}-${currentMatchId}`;
   updateWinFlash(match);
 }
 
@@ -466,6 +444,7 @@ function saveAndAdvance() {
   }
   
   saveTournamentData(); refreshAllUI();
+  // 自動導航至下一場
   if(currentMatchId < tournamentData[currentStage].length) loadMatch(currentStage, currentMatchId + 1);
 }
 
