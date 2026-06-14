@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>失控陀螺爭霸賽 - 雙翼對稱單頁台</title>
+<title>失控陀螺爭霸賽 - 全自動雙向同步控制台</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap');
 
@@ -32,7 +32,7 @@ body {
   color: var(--text);
   font-family: 'Noto Sans TC', sans-serif;
   height: 100vh;
-  overflow: hidden; /* 鎖死滾動條 */
+  overflow: hidden; 
   display: flex;
   flex-direction: column;
 }
@@ -91,10 +91,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
+  padding: 15px 15px;
   background: #030308;
-  height: 62%; /* 微調高度給下半部留呼吸空間 */
-  margin-bottom: 15px; /* 💥 核心優化：增加賽程表與下方控制台之間的戰術舒適間距 */
+  height: 60%; /* 稍微調降樹狀圖比例 */
 }
 
 .wing {
@@ -124,7 +123,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   border-left: 1px dashed rgba(30,30,48,0.5);
   border-right: 1px dashed rgba(30,30,48,0.5);
   padding: 0 5px;
@@ -133,7 +132,7 @@ body {
 /* 樹狀卡片 */
 .tree-match-group { display: flex; flex-direction: column; justify-content: center; position: relative; width: 100%; margin: 2px 0; }
 .tcard { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
-.tcard.is-live { border-color: var(--gold); box-shadow: 0 0 8px rgba(255,215,0,0.25); }
+.tcard.is-live { border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.4); transform: scale(1.02); }
 .tcard-header { font-size: 0.5rem; padding: 1px 4px; color: var(--muted); border-bottom: 1px solid rgba(30,30,48,0.5); display: flex; justify-content: space-between; }
 .tcard-team { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.68rem; font-weight: 700; height: 18px; }
 .tcard-team.p-red { border-left: 2px solid var(--red); }
@@ -143,34 +142,36 @@ body {
 .tcard-team.winner .name { color: #fff; font-weight: 900; }
 .tcard-team.winner .score { color: var(--gold); }
 
-/* ── 下半部：中控計分台（留白設計） ── */
+/* ── 下半部：一體化計分台（加大物理間距、加強霓虹陰影） ── */
 .control-container {
-  height: 33%;
+  height: 35%; /* 放大控制台空間 */
   background: var(--panel);
-  border-top: 1px solid var(--border);
+  border-top: 2px solid var(--border); /* 加粗邊框 */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px;
-  gap: 20px;
-  box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
+  padding: 15px 20px;
+  gap: 25px;
+  box-shadow: 0 -15px 30px rgba(0,0,0,0.7); /* 加強阻隔陰影，製造物理間距感 */
+  z-index: 15;
 }
 
 .control-center-board { 
   display: grid; 
-  grid-template-columns: 320px auto 320px; 
+  grid-template-columns: 340px auto 340px; 
   background: var(--bg); 
   border: 1px solid var(--border); 
   border-radius: 6px; 
   overflow: hidden; 
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
-.side { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 15px; gap: 8px; position: relative; }
+.side { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 20px; gap: 8px; position: relative; }
 .side.red-side  { background: linear-gradient(135deg, rgba(255,30,45,0.08) 0%, transparent 80%); }
 .side.blue-side { background: linear-gradient(225deg, rgba(21,101,255,0.08) 0%, transparent 80%); }
 
 .team-name-live { 
   font-weight: 900; 
-  font-size: 1.8rem; 
+  font-size: 1.9rem; 
   text-align: center; 
   word-break: break-all; 
   min-height: 1.4em; 
@@ -183,34 +184,34 @@ body {
 .red-side .team-name-live { color: #fff; text-shadow: 0 0 15px var(--red-glow); }
 .blue-side .team-name-live { color: #fff; text-shadow: 0 0 15px var(--blue-glow); }
 
-.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.8rem; line-height: 1; }
-.red-side .big-score { color: var(--red); }
-.blue-side .big-score { color: var(--blue); }
+.big-score { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 3.2rem; line-height: 1; }
+.red-side .big-score { color: var(--red); text-shadow: 0 0 10px rgba(255,30,45,0.2); }
+.blue-side .big-score { color: var(--blue); text-shadow: 0 0 10px rgba(21,101,255,0.2); }
 .big-score.bump { animation: scoreBump 0.15s ease-out; }
 
-.btn-row { display: flex; gap: 10px; }
-.score-btn { width: 36px; height: 36px; border-radius: 4px; border: 1px solid; background: transparent; font-size: 1.2rem; font-weight: 900; cursor: pointer; }
+.btn-row { display: flex; gap: 12px; }
+.score-btn { width: 38px; height: 38px; border-radius: 4px; border: 1px solid; background: transparent; font-size: 1.3rem; font-weight: 900; cursor: pointer; }
 .red-side .score-btn { border-color: var(--red-dim); color: var(--red); }
 .blue-side .score-btn { border-color: var(--blue-dim); color: var(--blue); }
-.red-side .score-btn:hover { background: var(--red); color: #fff; }
-.blue-side .score-btn:hover { background: var(--blue); color: #fff; }
+.red-side .score-btn:hover { background: var(--red); color: #fff; box-shadow: 0 0 10px var(--red-glow); }
+.blue-side .score-btn:hover { background: var(--blue); color: #fff; box-shadow: 0 0 10px var(--blue-glow); }
 
 .win-flash { font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 2px; opacity: 0; margin-top: 2px; }
 .win-flash.show { opacity: 1; }
 .red-side .win-flash { background: var(--red); color: #fff; }
 .blue-side .win-flash { background: var(--blue); color: #fff; }
 
-.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0 25px; min-width: 100px; }
-.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--muted); }
-.round-badge { padding: 3px 6px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.6rem; color: var(--text); background: var(--panel); white-space: nowrap; font-weight: 700; }
+.vs-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0 25px; min-width: 110px; }
+.vs-text { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; color: var(--muted); }
+.round-badge { padding: 4px 8px; border: 1px solid var(--border); border-radius: 2px; font-size: 0.65rem; color: var(--text); background: var(--panel); white-space: nowrap; font-weight: 700; letter-spacing: 0.05em; }
 .match-info-badge { font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
 
 /* 右側功能按鈕區 */
-.control-right { display: flex; flex-direction: column; gap: 6px; width: 160px; }
+.control-right { display: flex; flex-direction: column; gap: 8px; width: 160px; }
 .action-btn { padding: 6px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; font-size: 0.72rem; cursor: pointer; text-align: center; }
-.action-btn.confirm-btn { background: linear-gradient(90deg, var(--red-dim), var(--blue-dim)); border-color: transparent; color: #fff; font-size: 0.75rem; padding: 10px; }
-.action-btn.confirm-btn:hover { background: linear-gradient(90deg, var(--red), var(--blue)); box-shadow: 0 0 10px rgba(150,50,150,0.3); }
-.action-btn.danger-btn { border-color: rgba(255, 30, 45, 0.15); color: #ff5252; font-size: 0.65rem; padding: 4px; }
+.action-btn.confirm-btn { background: linear-gradient(90deg, var(--red-dim), var(--blue-dim)); border-color: transparent; color: #fff; font-size: 0.78rem; padding: 12px; }
+.action-btn.confirm-btn:hover { background: linear-gradient(90deg, var(--red), var(--blue)); box-shadow: 0 0 15px rgba(150,50,150,0.5); }
+.action-btn.danger-btn { border-color: rgba(255, 30, 45, 0.15); color: #ff5252; font-size: 0.65rem; padding: 4px; margin-top: 5px; }
 
 /* ── 彈出式拍照牆 ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(4,4,8,0.96); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -237,7 +238,7 @@ body {
     <div class="header-left">
       <div class="gyro-icon">🌀</div>
       <h1 class="site-title">失控陀螺爭霸賽</h1>
-      <span class="site-sub">直覺雙向即時連動控台</span>
+      <span class="site-sub">直覺點擊雙向即時連動控台</span>
     </div>
     <button class="photo-wall-btn" onclick="toggleModal(true)">🏆 榮譽拍照牆</button>
   </header>
@@ -336,10 +337,24 @@ const stagesConfig = [
 ];
 let currentStage = 'r32'; let currentMatchId = 1;
 
+// ── 【💥 核心同步升級 ── 同步接收大螢幕導航訊號防線】 ──
 window.addEventListener('storage', (e) => {
+  // 1. 同步基礎數據（名單與分數）
   if (e.key === "gyro_tournament_save") {
     tournamentData = JSON.parse(e.newValue);
-    refreshAllUI(); syncScoreboardFromData();
+    refreshAllUI(); 
+    syncScoreboardFromData();
+  }
+  // 2. 💥 全新加入：同步進行中場次的金色高亮導航訊號
+  if (e.key === "gyro_current_match_signal") {
+    const signal = JSON.parse(e.newValue);
+    if(signal) {
+      currentStage = signal.stage;
+      currentMatchId = signal.id;
+      // 另一個分頁的大螢幕卡片跟著連動高亮！
+      refreshAllUI();
+      syncScoreboardFromData();
+    }
   }
 });
 
@@ -373,6 +388,11 @@ function initNewTournament() {
 
 function saveTournamentData() { localStorage.setItem("gyro_tournament_save", JSON.stringify(tournamentData)); }
 
+// 💥 廣播目前點選或前進的場次給大螢幕分頁
+function broadcastMatchSignal(stage, id) {
+  localStorage.setItem("gyro_current_match_signal", JSON.stringify({ stage: stage, id: id }));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadTournamentData(); refreshAllUI(); loadMatch(currentStage, currentMatchId);
 });
@@ -389,7 +409,12 @@ function refreshAllUI() {
   calculatePodium();
 }
 
-function loadMatch(stage, id) { currentStage = stage; currentMatchId = id; syncScoreboardFromData(); refreshAllUI(); }
+function loadMatch(stage, id) { 
+  currentStage = stage; 
+  currentMatchId = id; 
+  syncScoreboardFromData(); 
+  refreshAllUI(); 
+}
 
 function syncScoreboardFromData() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId); if(!match) return;
@@ -425,7 +450,6 @@ function updateWinFlash(match) {
   if(match.winner === 'red') rFlash.classList.add('show'); else if(match.winner === 'blue') bFlash.classList.add('show');
 }
 
-// ── 【功能升級：按下晉級後，兩邊同步全自動導航下一場】 ──
 function saveAndAdvance() {
   const match = tournamentData[currentStage].find(m => m.id === currentMatchId);
   const rScore = match.redScore; const bScore = match.blueScore;
@@ -445,11 +469,9 @@ function saveAndAdvance() {
     else { tournamentData.r2[0].blue = loserName; tournamentData.r2[1].blue = winnerName; }
   }
   
-  // 核心自動導航邏輯
   let nextStage = currentStage;
   let nextMatchId = currentMatchId + 1;
   
-  // 當這組打完時，自動跳往下個大階級的第一場
   if (nextMatchId > tournamentData[currentStage].length) {
     if (currentStage === 'r32') { nextStage = 'r16'; nextMatchId = 1; }
     else if (currentStage === 'r16') { nextStage = 'r8'; nextMatchId = 1; }
@@ -464,7 +486,8 @@ function saveAndAdvance() {
     else alert(`🥉 恭喜【${winnerName}】贏得季軍！`);
     refreshAllUI();
   } else {
-    // 💥 連動點擊：呼叫 loadMatch 自動跳下一局，計分板與樹狀圖 LIVE 高亮框一併移過去！
+    // 💥 自動導航升級：不只更新數據，同時對外發射廣播訊號，讓大螢幕分頁跟著主動載入下一場並移動高亮框！
+    broadcastMatchSignal(nextStage, nextMatchId);
     loadMatch(nextStage, nextMatchId);
   }
 }
@@ -475,7 +498,11 @@ function resetCurrentMatch() {
   saveTournamentData(); loadMatch(currentStage, currentMatchId); refreshAllUI();
 }
 
-function selectMatchFromGrid(stage, id) { loadMatch(stage, id); }
+// 當你手動點選任何卡片時，一併對外廣播訊號
+function selectMatchFromGrid(stage, id) { 
+  broadcastMatchSignal(stage, id);
+  loadMatch(stage, id); 
+}
 
 function renderWing(stage, startId, endId, containerId) {
   const container = document.getElementById(containerId); if(!container) return;
