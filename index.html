@@ -10,6 +10,53 @@
 :root{--red:#ff1e2d;--red-dim:#7a0010;--blue:#1565ff;--blue-dim:#062a80;--bg:#06060e;--panel:#0d0d1a;--border:#27273c;--text:#ededfa;--muted:#777791;--gold:#ffd700;--green:#00ffcc}
 *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;overflow:hidden}.site-header{height:48px;display:flex;align-items:center;justify-content:space-between;padding:5px 14px;background:rgba(13,13,26,.96);border-bottom:1px solid var(--border)}.header-left,.header-actions,.session-tabs{display:flex;align-items:center;gap:8px}.site-title{font:900 1.05rem 'Orbitron',sans-serif;background:linear-gradient(90deg,var(--red),#fff,var(--blue));-webkit-background-clip:text;color:transparent}.site-sub{font-size:.58rem;color:var(--muted)}button{font-family:inherit}.top-btn,.session-btn,.add-session-btn{border:1px solid var(--border);background:#111120;color:var(--text);border-radius:5px;padding:5px 9px;font-size:.68rem;font-weight:900;cursor:pointer;white-space:nowrap}.top-btn:hover,.session-btn:hover,.add-session-btn:hover{border-color:var(--gold)}.top-btn.names{border-color:#ff9de1;color:#ff9de1}.top-btn.export{border-color:var(--green);color:var(--green)}.top-btn.podium{border-color:var(--gold);color:var(--gold)}.top-btn.points{border-color:#7cff6b;color:#7cff6b}.session-bar{height:42px;padding:5px 14px;display:flex;align-items:center;justify-content:space-between;background:#090913;border-bottom:1px solid var(--border)}.session-tabs{overflow-x:auto;max-width:calc(100vw - 160px)}.session-btn.active{background:linear-gradient(90deg,var(--red-dim),var(--blue-dim));border-color:#fff;color:#fff}.add-session-btn{color:var(--green);border-color:var(--green)}.main-layout{height:calc(100vh - 90px);display:flex;flex-direction:column}.bracket-container{height:76%;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#030308}.wing{width:39%;height:100%;display:flex;align-items:center;gap:18px}.right-wing{flex-direction:row-reverse}.bracket-round{width:50%;height:100%;display:flex;flex-direction:column;justify-content:space-around}.round-header-label{text-align:center;color:var(--gold);font:900 .66rem 'Orbitron',sans-serif}.center-final-zone{width:19%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:10px;border-left:1px dashed #252538;border-right:1px dashed #252538;padding:0 8px}.tree-match-group{width:100%}.tcard{background:var(--panel);border:1px solid var(--border);border-radius:5px;overflow:hidden;cursor:pointer;transition:.15s}.tcard:hover{border-color:#777}.tcard.is-live{border-color:var(--gold);box-shadow:0 0 12px rgba(255,215,0,.35);transform:scale(1.02)}.tcard-header{height:17px;padding:1px 5px;font-size:.53rem;color:var(--muted);border-bottom:1px solid var(--border);display:flex;justify-content:space-between}.tcard-team{height:24px;display:flex;align-items:center;justify-content:space-between;padding:2px 6px;font-size:.75rem;font-weight:700}.p-red{border-left:3px solid var(--red)}.p-blue{border-left:3px solid var(--blue);border-top:1px solid #202030}.tcard-team .name{max-width:135px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#b3b3cc}.tcard-team .score{font:900 .8rem 'Orbitron',sans-serif;color:var(--muted)}.tcard-team.winner .name{color:#fff}.tcard-team.winner .score{color:var(--gold)}.control-container{height:24%;display:flex;align-items:center;justify-content:center;gap:18px;padding:8px 15px;background:var(--panel);border-top:2px solid var(--border)}.control-board{height:100%;width:min(900px,78vw);display:grid;grid-template-columns:1fr 110px 1fr;background:var(--bg);border:1px solid var(--border);border-radius:7px;overflow:hidden}.side{display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:10px;position:relative}.blue-side{flex-direction:row-reverse}.team-live{font-size:1.45rem;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.red-side .team-live{text-shadow:0 0 10px rgba(255,30,45,.55)}.blue-side .team-live{text-shadow:0 0 10px rgba(21,101,255,.55)}.big-score{font:900 2.6rem 'Orbitron',sans-serif;min-width:65px;text-align:center}.red-side .big-score{color:var(--red)}.blue-side .big-score{color:var(--blue)}.score-buttons{display:flex;gap:5px}.score-btn{width:32px;height:32px;border-radius:4px;background:transparent;font-size:1.15rem;font-weight:900;cursor:pointer}.red-side .score-btn{border:1px solid var(--red-dim);color:var(--red)}.blue-side .score-btn{border:1px solid var(--blue-dim);color:var(--blue)}.vs-col{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.vs{font:900 1.2rem 'Orbitron',sans-serif;color:var(--muted)}.badge{font-size:.6rem;border:1px solid var(--border);padding:2px 6px;border-radius:3px}.match-label{font-size:.58rem;color:var(--muted)}.control-actions{width:150px;display:flex;flex-direction:column;gap:6px}.action-btn{padding:6px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:800;font-size:.68rem;cursor:pointer}.confirm-btn{padding:10px 4px;background:linear-gradient(90deg,var(--red-dim),var(--blue-dim));border:0}.danger{color:#ff6565}.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(2,2,8,.94);padding:18px}.modal.active{display:flex}.modal-card{width:min(760px,96vw);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 0 40px #000}.modal-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.modal-title{font-size:1.3rem;color:var(--gold);font-weight:900}.close-btn{border:0;background:transparent;color:#aaa;font-size:1.6rem;cursor:pointer}.name-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.name-item{display:grid;grid-template-columns:85px 1fr;align-items:center;gap:8px}.name-item label{font-size:.75rem;color:var(--muted)}.name-item input{width:100%;background:#080811;color:#fff;border:1px solid var(--border);border-radius:5px;padding:8px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.save-btn{background:linear-gradient(90deg,var(--red),var(--blue));color:#fff;border:0;border-radius:5px;padding:9px 18px;font-weight:900;cursor:pointer}.secondary-btn{background:#111;color:#ddd;border:1px solid var(--border);border-radius:5px;padding:9px 14px;cursor:pointer}.podium-stage{display:flex;align-items:flex-end;justify-content:center;gap:12px;height:260px;margin-top:20px}.podium-box{width:30%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:15px 8px;background:#080811;border:2px solid var(--border);border-bottom:0;border-radius:10px 10px 0 0}.rank1{height:100%;border-color:#ffd700}.rank2{height:78%;border-color:#b0b0d0}.rank3{height:63%;border-color:#cd7f32}.winner-name{font-size:1.2rem;font-weight:900;text-align:center;word-break:break-all}.rank1 .winner-name{font-size:1.8rem}.fourth{margin:12px auto 0;width:50%;text-align:center;border:1px solid var(--border);padding:10px;border-radius:6px}.points-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.points-toolbar select{background:#080811;color:#fff;border:1px solid var(--border);border-radius:5px;padding:7px 10px}.points-note{font-size:.68rem;color:var(--muted);margin-bottom:10px}.points-table-wrap{overflow:auto;max-height:62vh;border:1px solid var(--border);border-radius:7px}.points-table{width:100%;border-collapse:collapse;min-width:660px}.points-table th,.points-table td{padding:8px 9px;border-bottom:1px solid #242438;text-align:center;font-size:.74rem}.points-table th{position:sticky;top:0;background:#161625;color:var(--gold);z-index:1}.points-table td.name{text-align:left;font-weight:900}.points-table tr:nth-child(even) td{background:rgba(255,255,255,.015)}.points-table tr.rank-1 td{background:rgba(255,215,0,.09)}.points-table tr.rank-2 td{background:rgba(176,176,208,.07)}.points-table tr.rank-3 td{background:rgba(205,127,50,.08)}.rank-badge{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:#202033;font-weight:900}.points-total{font:900 .9rem 'Orbitron',sans-serif;color:#7cff6b}@media(max-width:1000px){.site-sub{display:none}.team-live{font-size:1.05rem}.control-board{width:75vw}.wing{gap:8px}.tcard-team .name{max-width:90px}}
 </style>
+
+<style id="large-font-overrides">
+/* 大字體顯示版：提升賽程、控制台、按鈕與積分後台的可讀性 */
+.site-title{font-size:1.22rem}
+.site-sub{font-size:.7rem}
+.top-btn,.session-btn,.add-session-btn{font-size:.82rem;padding:6px 11px}
+.session-bar>div:last-child{font-size:.78rem!important}
+.round-header-label{font-size:.8rem}
+.tcard-header{height:18px;font-size:.65rem;padding:1px 6px}
+.tcard-team{height:27px;font-size:.9rem;padding:2px 7px}
+.tcard-team .name{max-width:155px}
+.tcard-team .score{font-size:1rem}
+.team-live{font-size:1.75rem}
+.big-score{font-size:3.15rem;min-width:78px}
+.score-btn{width:38px;height:38px;font-size:1.4rem}
+.vs{font-size:1.4rem}
+.badge{font-size:.72rem;padding:3px 8px}
+.match-label{font-size:.7rem}
+.action-btn{font-size:.82rem;padding:8px}
+.confirm-btn{padding:12px 6px}
+.control-actions{width:170px}
+.modal-title{font-size:1.55rem}
+.name-item label{font-size:.9rem}
+.name-item input{font-size:1rem;padding:10px}
+.save-btn,.secondary-btn{font-size:.9rem}
+.points-toolbar select{font-size:.92rem;padding:9px 12px}
+.points-note{font-size:.82rem;line-height:1.6}
+.points-table th,.points-table td{font-size:.9rem;padding:10px 11px}
+.points-total{font-size:1.05rem}
+.rank-badge{width:30px;height:30px}
+.winner-name{font-size:1.45rem}
+.rank1 .winner-name{font-size:2.1rem}
+.fourth{font-size:1.05rem}
+@media(max-width:1100px){
+  .tcard-team{font-size:.82rem}
+  .tcard-team .name{max-width:110px}
+  .team-live{font-size:1.35rem}
+  .big-score{font-size:2.7rem;min-width:65px}
+  .top-btn,.session-btn{font-size:.74rem;padding:5px 8px}
+}
+@media(max-height:800px){
+  .tcard-header{height:17px;font-size:.6rem}
+  .tcard-team{height:25px;font-size:.82rem}
+  .tcard-team .score{font-size:.9rem}
+  .round-header-label{font-size:.72rem}
+}
+</style>
 </head>
 <body>
 <header class="site-header">
