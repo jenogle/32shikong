@@ -57,6 +57,36 @@
   .round-header-label{font-size:.72rem}
 }
 </style>
+
+<style id="final-readable-compact-overrides">
+/* 最終清晰窄版：文字再放大，對戰卡左右縮窄 */
+.site-title{font-size:1.3rem}
+.top-btn,.session-btn{font-size:.88rem}
+.session-bar>div:last-child{font-size:.86rem!important}
+.round-header-label{font-size:.88rem}
+.bracket-round{align-items:center}
+.tree-match-group{width:86%;margin-left:auto;margin-right:auto}
+.center-final-zone>div:not(.round-header-label){width:88%;margin-left:auto;margin-right:auto}
+.tcard-header{font-size:.72rem}
+.tcard-team{font-size:.98rem}
+.tcard-team .score{font-size:1.08rem}
+.tcard-team .name{max-width:145px}
+.team-live{font-size:1.9rem}
+.big-score{font-size:3.3rem}
+.action-btn{font-size:.88rem}
+.points-table th,.points-table td{font-size:.96rem}
+.points-note{font-size:.88rem}
+@media(max-width:1100px){
+  .tree-match-group{width:90%}
+  .tcard-team{font-size:.88rem}
+  .tcard-team .name{max-width:105px}
+  .team-live{font-size:1.45rem}
+}
+@media(max-height:800px){
+  .tcard-team{font-size:.87rem}
+  .tcard-team .score{font-size:.96rem}
+}
+</style>
 </head>
 <body>
 <header class="site-header">
@@ -70,7 +100,7 @@
 </header>
 <div class="session-bar">
   <div class="session-tabs" id="session-tabs"></div>
-  <div style="font-size:.66rem;color:var(--green);font-weight:900">場次4：前三場各前5名＋最高分第6名</div>
+  <div style="font-size:.66rem;color:var(--green);font-weight:900">爭奪戰：前三場各前5名＋最高分第6名</div>
 </div>
 <div class="main-layout">
   <div class="bracket-container" id="bracket-capture-node">
@@ -108,8 +138,8 @@ const PRESET_SESSION_PLAYERS=[["張*瑞","劉*辰","蔡*宸","李*勳","陳*翰"
 function defaultPlayers(){return Array.from({length:16},(_,i)=>`參賽者${i+1}`)}
 function blankMatch(id,red,blue){return{id,red,blue,redScore:0,blueScore:0,winner:null}}
 function makeTournament(players){return{players:[...players],r16:Array.from({length:8},(_,i)=>blankMatch(i+1,players[i*2],players[i*2+1])),r8:Array.from({length:4},(_,i)=>blankMatch(i+1,`16強 M${i*2+1} 勝者`,`16強 M${i*2+2} 勝者`)),r4:Array.from({length:2},(_,i)=>blankMatch(i+1,`8強 M${i*2+1} 勝者`,`8強 M${i*2+2} 勝者`)),r2:[blankMatch(1,'4強 M1 敗者','4強 M2 敗者'),blankMatch(2,'4強 M1 勝者','4強 M2 勝者')]}}
-function newSession(index){const preset=PRESET_SESSION_PLAYERS[index-1];const players=index===4?Array.from({length:16},(_,i)=>`待晉級${i+1}`):(preset?[...preset]:defaultPlayers());return{id:'s'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name:`場次${index}`,data:makeTournament(players),currentStage:'r16',currentMatchId:1,isFinalSession:index===4}}
-function initApp(){let raw=localStorage.getItem(STORAGE_KEY)||localStorage.getItem(LEGACY_STORAGE_KEY);if(raw){try{app=JSON.parse(raw)}catch(e){}}if(!app.sessions||!app.sessions.length){app={sessions:[newSession(1),newSession(2),newSession(3),newSession(4)],activeSessionId:null}}while(app.sessions.length<4)app.sessions.push(newSession(app.sessions.length+1));if(app.sessions.length>4)app.sessions=app.sessions.slice(0,4);app.sessions.forEach((s,i)=>{s.name=`場次${i+1}`;s.isFinalSession=i===3});if(!app.activeSessionId||!app.sessions.some(s=>s.id===app.activeSessionId))app.activeSessionId=app.sessions[0].id;updateFinalSessionQualifiers(false);const s=getSession();currentStage=s.currentStage||'r16';currentMatchId=s.currentMatchId||1;saveApp()}
+function newSession(index){const preset=PRESET_SESSION_PLAYERS[index-1];const players=index===4?Array.from({length:16},(_,i)=>`待晉級${i+1}`):(preset?[...preset]:defaultPlayers());return{id:'s'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name:index===4?'爭奪戰':`場次${index}`,data:makeTournament(players),currentStage:'r16',currentMatchId:1,isFinalSession:index===4}}
+function initApp(){let raw=localStorage.getItem(STORAGE_KEY)||localStorage.getItem(LEGACY_STORAGE_KEY);if(raw){try{app=JSON.parse(raw)}catch(e){}}if(!app.sessions||!app.sessions.length){app={sessions:[newSession(1),newSession(2),newSession(3),newSession(4)],activeSessionId:null}}while(app.sessions.length<4)app.sessions.push(newSession(app.sessions.length+1));if(app.sessions.length>4)app.sessions=app.sessions.slice(0,4);app.sessions.forEach((s,i)=>{s.name=i===3?'爭奪戰':`場次${i+1}`;s.isFinalSession=i===3});if(!app.activeSessionId||!app.sessions.some(s=>s.id===app.activeSessionId))app.activeSessionId=app.sessions[0].id;updateFinalSessionQualifiers(false);const s=getSession();currentStage=s.currentStage||'r16';currentMatchId=s.currentMatchId||1;saveApp()}
 function saveApp(){localStorage.setItem(STORAGE_KEY,JSON.stringify(app))}
 function getSession(){return app.sessions.find(s=>s.id===app.activeSessionId)}function data(){return getSession().data}
 function renderSessions(){const box=document.getElementById('session-tabs');box.innerHTML='';app.sessions.forEach(s=>{const b=document.createElement('button');b.className='session-btn'+(s.id===app.activeSessionId?' active':'');b.textContent=s.name;b.onclick=()=>switchSession(s.id);box.appendChild(b)})}
@@ -124,15 +154,15 @@ function adjustScore(side,amt){const m=data()[currentStage].find(x=>x.id===curre
 function saveAndAdvance(){const d=data(),m=d[currentStage].find(x=>x.id===currentMatchId);if(m.redScore===m.blueScore){alert('平手無法判定勝負！');return}m.winner=m.redScore>m.blueScore?'red':'blue';const winner=m[m.winner],loser=m[m.winner==='red'?'blue':'red'];const idx=Math.floor((currentMatchId-1)/2),redSlot=currentMatchId%2===1;if(currentStage==='r16'){d.r8[idx][redSlot?'red':'blue']=winner}else if(currentStage==='r8'){d.r4[idx][redSlot?'red':'blue']=winner}else if(currentStage==='r4'){if(currentMatchId===1){d.r2[0].red=loser;d.r2[1].red=winner}else{d.r2[0].blue=loser;d.r2[1].blue=winner}}let ns=currentStage,nm=currentMatchId+1;if(nm>d[currentStage].length){if(currentStage==='r16'){ns='r8';nm=1}else if(currentStage==='r8'){ns='r4';nm=1}else if(currentStage==='r4'){ns='r2';nm=1}}if(currentStage==='r2'){alert(currentMatchId===2?`🎉 總冠軍：【${winner}】🏆`:`🥉 季軍：【${winner}】`)}else{currentStage=ns;currentMatchId=nm}const s=getSession();s.currentStage=currentStage;s.currentMatchId=currentMatchId;if(!s.isFinalSession)updateFinalSessionQualifiers(false);saveApp();refreshAllUI();syncScoreboard()}
 function resetCurrentMatch(){const m=data()[currentStage].find(x=>x.id===currentMatchId);m.redScore=m.blueScore=0;m.winner=null;saveApp();refreshAllUI();syncScoreboard()}
 function clearCurrentSession(){if(!confirm(`確定要重置「${getSession().name}」全部賽事資料嗎？`))return;if(getSession().isFinalSession)updateFinalSessionQualifiers(false);const players=[...data().players];getSession().data=makeTournament(players);currentStage='r16';currentMatchId=1;getSession().currentStage=currentStage;getSession().currentMatchId=currentMatchId;saveApp();refreshAllUI();syncScoreboard()}
-function openNamesModal(){const grid=document.getElementById('name-grid');grid.innerHTML='';data().players.forEach((name,i)=>{const row=document.createElement('div');row.className='name-item';row.innerHTML=`<label>參賽者 ${i+1}</label><input id="player-input-${i}" maxlength="20" value="${attr(name)}" ${getSession().isFinalSession?'disabled title="場次4由積分排名自動產生"':''}>`;grid.appendChild(row)});toggleNames(true)}
+function openNamesModal(){const grid=document.getElementById('name-grid');grid.innerHTML='';data().players.forEach((name,i)=>{const row=document.createElement('div');row.className='name-item';row.innerHTML=`<label>參賽者 ${i+1}</label><input id="player-input-${i}" maxlength="20" value="${attr(name)}" ${getSession().isFinalSession?'disabled title="爭奪戰名單由積分排名自動產生"':''}>`;grid.appendChild(row)});toggleNames(true)}
 function toggleNames(show){document.getElementById('names-modal').classList.toggle('active',show)}
 function resetNamesToDefault(){defaultPlayers().forEach((n,i)=>document.getElementById(`player-input-${i}`).value=n)}
-function saveNames(){if(getSession().isFinalSession){alert('場次4名單由場次1～3積分排名自動產生，不能手動修改。');return}const names=Array.from({length:16},(_,i)=>document.getElementById(`player-input-${i}`).value.trim()||`參賽者${i+1}`);if(!confirm('儲存名稱會重建目前場次的賽程與比分，確定嗎？'))return;getSession().data=makeTournament(names);currentStage='r16';currentMatchId=1;getSession().currentStage=currentStage;getSession().currentMatchId=currentMatchId;saveApp();toggleNames(false);refreshAllUI();syncScoreboard()}
+function saveNames(){if(getSession().isFinalSession){alert('爭奪戰名單由場次1～3積分排名自動產生，不能手動修改。');return}const names=Array.from({length:16},(_,i)=>document.getElementById(`player-input-${i}`).value.trim()||`參賽者${i+1}`);if(!confirm('儲存名稱會重建目前場次的賽程與比分，確定嗎？'))return;getSession().data=makeTournament(names);currentStage='r16';currentMatchId=1;getSession().currentStage=currentStage;getSession().currentMatchId=currentMatchId;saveApp();toggleNames(false);refreshAllUI();syncScoreboard()}
 
 function sessionHasStarted(s){return ['r16','r8','r4','r2'].some(stage=>(s.data[stage]||[]).some(m=>m.redScore>0||m.blueScore>0||m.winner))}
 function getSessionRanking(s){return getPointsRows(s.id).filter(r=>r.name!=='(輪空)'&&!/^待晉級\d+$/.test(r.name))}
 function buildFinalQualifiers(){const source=app.sessions.slice(0,3);if(source.length<3)return Array.from({length:16},(_,i)=>`待晉級${i+1}`);const rankings=source.map(getSessionRanking);const qualified=[];rankings.forEach(rows=>qualified.push(...rows.slice(0,5).map(r=>r.name)));const sixthCandidates=rankings.map((rows,i)=>rows[5]?({...rows[5],sourceIndex:i}):null).filter(Boolean).sort((a,b)=>b.points-a.points||b.wins-a.wins||b.diff-a.diff||a.sourceIndex-b.sourceIndex||a.name.localeCompare(b.name,'zh-Hant'));if(sixthCandidates[0])qualified.push(sixthCandidates[0].name);while(qualified.length<16)qualified.push(`待晉級${qualified.length+1}`);return qualified.slice(0,16)}
-function updateFinalSessionQualifiers(showNotice){const final=app.sessions&&app.sessions[3];if(!final)return;const names=buildFinalQualifiers();const changed=JSON.stringify(final.data&&final.data.players)!==JSON.stringify(names);if(changed&&!sessionHasStarted(final)){final.data=makeTournament(names);final.currentStage='r16';final.currentMatchId=1;if(showNotice)alert('場次4名單已依場次1～3最新積分排名更新。')}else if(changed&&showNotice&&sessionHasStarted(final)){alert('場次4已開始比賽，為避免清除比分，晉級名單不再自動改動。')} }
+function updateFinalSessionQualifiers(showNotice){const final=app.sessions&&app.sessions[3];if(!final)return;const names=buildFinalQualifiers();const changed=JSON.stringify(final.data&&final.data.players)!==JSON.stringify(names);if(changed&&!sessionHasStarted(final)){final.data=makeTournament(names);final.currentStage='r16';final.currentMatchId=1;if(showNotice)alert('爭奪戰名單已依場次1～3最新積分排名更新。')}else if(changed&&showNotice&&sessionHasStarted(final)){alert('爭奪戰已開始比賽，為避免清除比分，晉級名單不再自動改動。')} }
 function openPointsBackend(){const sel=document.getElementById('points-session-filter');sel.innerHTML='<option value="all">全部場次累積</option>'+app.sessions.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');sel.value='all';renderPointsBackend();togglePoints(true)}
 function togglePoints(show){document.getElementById('points-modal').classList.toggle('active',show)}
 function getPointsRows(filterId){const sessions=filterId==='all'?app.sessions:app.sessions.filter(s=>s.id===filterId);const map=new Map();const placeholder=/^(16強|8強|4強).*(勝者|敗者)$/;function ensure(name){if(!name||name==='(輪空)'||/^待晉級\d+$/.test(name)||placeholder.test(name))return null;if(!map.has(name))map.set(name,{name,points:0,played:0,wins:0,losses:0,against:0,sessions:new Set()});return map.get(name)}sessions.forEach(s=>{(s.data.players||[]).forEach(name=>{const r=ensure(name);if(r)r.sessions.add(s.name)});['r16','r8','r4','r2'].forEach(stage=>(s.data[stage]||[]).forEach(m=>{const r=ensure(m.red),b=ensure(m.blue);if(!r||!b)return;const started=m.redScore>0||m.blueScore>0||!!m.winner;if(!started)return;r.points+=Number(m.redScore)||0;b.points+=Number(m.blueScore)||0;r.against+=Number(m.blueScore)||0;b.against+=Number(m.redScore)||0;r.played++;b.played++;r.sessions.add(s.name);b.sessions.add(s.name);if(m.winner==='red'){r.wins++;b.losses++}else if(m.winner==='blue'){b.wins++;r.losses++}}))});return [...map.values()].map(r=>({...r,diff:r.points-r.against,sessionCount:r.sessions.size,sessionNames:[...r.sessions]})).sort((a,b)=>b.points-a.points||b.wins-a.wins||b.diff-a.diff||a.name.localeCompare(b.name,'zh-Hant'))}
