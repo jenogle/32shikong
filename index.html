@@ -61,6 +61,8 @@
 <style id="final-readable-compact-overrides">
 /* 最終清晰窄版：文字再放大，對戰卡左右縮窄 */
 .site-title{font-size:1.3rem}
+body{height:100vh;min-height:0;padding:15px}
+.main-layout{height:calc(100vh - 120px)}
 .top-btn,.session-btn{font-size:.88rem}
 .session-bar>div:last-child{font-size:.86rem!important}
 .round-header-label{font-size:.88rem}
@@ -72,14 +74,14 @@
 .tcard-team .score{font-size:1.08rem}
 .tcard-team .name{max-width:145px}
 .team-live{font-size:1.9rem}
+.team-live{min-width:0;flex:1}
 .big-score{font-size:3.3rem}
 .action-btn{font-size:.88rem}
-.walkover-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.walkover-btn{font-size:.76rem!important;padding:8px 3px!important;line-height:1.25}
-.walkover-red{border-color:var(--red-dim);color:#ff7b84}
-.walkover-blue{border-color:var(--blue-dim);color:#75a2ff}
-.walkover-red:hover{background:var(--red-dim);color:#fff}
-.walkover-blue:hover{background:var(--blue-dim);color:#fff}
+.walkover-score-btn{height:38px;padding:0 7px;border-radius:4px;background:transparent;font-size:.7rem;font-weight:900;cursor:pointer;white-space:nowrap}
+.red-side .walkover-score-btn{border:1px solid var(--red-dim);color:#ff7b84}
+.blue-side .walkover-score-btn{border:1px solid var(--blue-dim);color:#75a2ff}
+.red-side .walkover-score-btn:hover{background:var(--red-dim);color:#fff}
+.blue-side .walkover-score-btn:hover{background:var(--blue-dim);color:#fff}
 .points-table th,.points-table td{font-size:.96rem}
 .points-note{font-size:.88rem}
 @media(max-width:1100px){
@@ -125,11 +127,11 @@
   </div>
   <div class="control-container">
     <div class="control-board">
-      <div class="side red-side"><div id="live-red-name" class="team-live">-</div><div id="live-red-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('red',-1)">−</button><button class="score-btn" onclick="adjustScore('red',1)">＋</button></div></div>
+      <div class="side red-side"><div id="live-red-name" class="team-live">-</div><div id="live-red-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('red',-1)">−</button><button class="score-btn" onclick="adjustScore('red',1)">＋</button><button class="walkover-score-btn" onclick="winByWalkover('red')">不戰而勝</button></div></div>
       <div class="vs-col"><div class="vs">VS</div><div class="badge" id="live-round-title">R16</div><div class="match-label" id="live-match-id">M1</div></div>
-      <div class="side blue-side"><div id="live-blue-name" class="team-live">-</div><div id="live-blue-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('blue',-1)">−</button><button class="score-btn" onclick="adjustScore('blue',1)">＋</button></div></div>
+      <div class="side blue-side"><div id="live-blue-name" class="team-live">-</div><div id="live-blue-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('blue',-1)">−</button><button class="score-btn" onclick="adjustScore('blue',1)">＋</button><button class="walkover-score-btn" onclick="winByWalkover('blue')">不戰而勝</button></div></div>
     </div>
-    <div class="control-actions"><button class="action-btn confirm-btn" onclick="saveAndAdvance()">確認勝出並晉級</button><div class="walkover-actions"><button class="action-btn walkover-btn walkover-red" onclick="winByWalkover('red')">紅方<br>不戰而勝</button><button class="action-btn walkover-btn walkover-blue" onclick="winByWalkover('blue')">藍方<br>不戰而勝</button></div><button class="action-btn" onclick="resetCurrentMatch()">重設目前對戰</button><button class="action-btn danger" onclick="clearCurrentSession()">重置本場賽事</button></div>
+    <div class="control-actions"><button class="action-btn confirm-btn" onclick="saveAndAdvance()">確認勝出並晉級</button><button class="action-btn" onclick="resetCurrentMatch()">重設目前對戰</button><button class="action-btn danger" onclick="clearCurrentSession()">重置本場賽事</button></div>
   </div>
 </div>
 <div class="modal" id="names-modal"><div class="modal-card"><div class="modal-title-row"><h2 class="modal-title">設定參賽者名稱</h2><button class="close-btn" onclick="toggleNames(false)">×</button></div><div class="name-grid" id="name-grid"></div><div class="modal-actions"><button class="secondary-btn" onclick="resetNamesToDefault()">恢復參賽者1～16</button><button class="save-btn" onclick="saveNames()">儲存名稱並重建賽程</button></div></div></div>
