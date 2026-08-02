@@ -127,9 +127,9 @@ body{height:100vh;min-height:0;padding:15px}
   </div>
   <div class="control-container">
     <div class="control-board">
-      <div class="side red-side"><div id="live-red-name" class="team-live">-</div><div id="live-red-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('red',-1)">−</button><button class="score-btn" onclick="adjustScore('red',1)">＋</button><button class="walkover-score-btn" onclick="winByWalkover('red')">不戰而勝</button></div></div>
+      <div class="side red-side"><div id="live-red-name" class="team-live">-</div><div id="live-red-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('red',-1)">−</button><button class="score-btn" onclick="adjustScore('red',1)">＋</button><button class="walkover-score-btn" onclick="winByWalkover('red')">勝</button></div></div>
       <div class="vs-col"><div class="vs">VS</div><div class="badge" id="live-round-title">R16</div><div class="match-label" id="live-match-id">M1</div></div>
-      <div class="side blue-side"><div id="live-blue-name" class="team-live">-</div><div id="live-blue-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('blue',-1)">−</button><button class="score-btn" onclick="adjustScore('blue',1)">＋</button><button class="walkover-score-btn" onclick="winByWalkover('blue')">不戰而勝</button></div></div>
+      <div class="side blue-side"><div id="live-blue-name" class="team-live">-</div><div id="live-blue-score" class="big-score">0</div><div class="score-buttons"><button class="score-btn" onclick="adjustScore('blue',-1)">−</button><button class="score-btn" onclick="adjustScore('blue',1)">＋</button><button class="walkover-score-btn" onclick="winByWalkover('blue')">勝</button></div></div>
     </div>
     <div class="control-actions"><button class="action-btn confirm-btn" onclick="saveAndAdvance()">確認勝出並晉級</button><button class="action-btn" onclick="resetCurrentMatch()">重設目前對戰</button><button class="action-btn danger" onclick="clearCurrentSession()">重置本場賽事</button></div>
   </div>
